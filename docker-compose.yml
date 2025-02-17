@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:17.2
+    container_name: fj4me
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: fj4me-db
+    ports:
+      - '5432:5432'
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:

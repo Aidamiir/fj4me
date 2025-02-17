@@ -1,0 +1,109 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  STUDENT
+  EMPLOYER
+}
+
+model User {
+  id                     Int            @id @default(autoincrement())
+  email                  String         @unique
+  password               String
+  role                   Role
+  profile                Profile?
+  resumes                Resume[]
+  vacancies              Vacancy[]
+  messagesSent           ChatMessage[]  @relation("senderMessages")
+  messagesReceived       ChatMessage[]  @relation("receiverMessages")
+  notifications          Notification[]
+  sessions               Session[]
+  isEmailConfirmed       Boolean        @default(false)
+  confirmationToken      String?
+  confirmationExpiresAt  DateTime?
+  resetPasswordToken     String?
+  resetPasswordExpiresAt DateTime?
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+}
+
+model Profile {
+  id        Int     @id @default(autoincrement())
+  user      User    @relation(fields: [userId], references: [id])
+  userId    Int     @unique
+  firstName String?
+  lastName  String?
+  phone     String?
+}
+
+model Resume {
+  id           Int           @id @default(autoincrement())
+  title        String
+  content      String
+  user         User          @relation(fields: [userId], references: [id])
+  userId       Int
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  applications Application[]
+}
+
+model Vacancy {
+  id           Int           @id @default(autoincrement())
+  title        String
+  description  String
+  user         User          @relation(fields: [userId], references: [id])
+  userId       Int
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  applications Application[]
+}
+
+model Application {
+  id        Int      @id @default(autoincrement())
+  resume    Resume   @relation(fields: [resumeId], references: [id])
+  resumeId  Int
+  vacancy   Vacancy  @relation(fields: [vacancyId], references: [id])
+  vacancyId Int
+  status    String
+  createdAt DateTime @default(now())
+}
+
+model ChatMessage {
+  id         Int      @id @default(autoincrement())
+  sender     User     @relation("senderMessages", fields: [senderId], references: [id])
+  senderId   Int
+  receiver   User     @relation("receiverMessages", fields: [receiverId], references: [id])
+  receiverId Int
+  content    String
+  createdAt  DateTime @default(now())
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  content   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Session {
+  id                    Int      @id @default(autoincrement())
+  user                  User     @relation(fields: [userId], references: [id])
+  userId                Int
+  encryptedRefreshToken String   @default("")
+  tokenIv               String   @default("")
+  tokenHash             String   @unique @default("")
+  ip                    String?
+  userAgent             String?
+  location              String?
+  device                String?
+  expiresAt             DateTime
+  createdAt             DateTime @default(now())
+}

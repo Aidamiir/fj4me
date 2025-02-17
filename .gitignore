@@ -1,0 +1,13 @@
+.idea
+
+backend/node_modules
+backend/dist
+
+backend/bun.lockb
+
+
+
+frontend/node_modules
+frontend/.next
+
+frontend/bun.lockb
