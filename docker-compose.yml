@@ -19,8 +19,6 @@ services:
     container_name: fj4me-nest-js-api
     ports:
       - '4040:4040'
-    env_file:
-      - ./backend/.env
     depends_on:
       - postgres
     networks:
