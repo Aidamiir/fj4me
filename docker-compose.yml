@@ -11,22 +11,6 @@ services:
       - '5432:5432'
     volumes:
       - db_data:/var/lib/postgresql/data
-    networks:
-      - app-network
-
-  backend:
-    build: ./backend
-    container_name: fj4me-nest-js-api
-    ports:
-      - '4040:4040'
-    depends_on:
-      - postgres
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
 
 volumes:
   db_data:

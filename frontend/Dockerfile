@@ -1,22 +1,21 @@
-FROM node:16-alpine as build
+FROM oven/bun:latest as build
 
 WORKDIR /app
 
 COPY package.json ./
 
-RUN npm install
+RUN bun install
 
 COPY . .
 
-RUN npm run build
+RUN bun run build
 
-FROM node:16-alpine
+FROM oven/bun:latest
 
 WORKDIR /app
 
-COPY --from=build /app/.next ./.next
-COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app /app
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["bun", "run", "start"]

@@ -2,7 +2,7 @@ import * as Joi from 'joi';
 import { type EnvConfig } from '../interfaces/env-config';
 
 export const validationSchema = Joi.object<EnvConfig>({
-    DATABASE_URL: Joi.string().required(),
+    DATABASE_URL: Joi.string().uri().required(),
     FRONTEND_URL: Joi.string().uri().required(),
 
     DOMAIN: Joi.string().required(),
