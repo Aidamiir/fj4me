@@ -19,21 +19,9 @@ services:
     build: ./backend
     container_name: fj4me-nest-js-api
     ports:
-      - '${PORT}:${PORT}'
-    environment:
-      DATABASE_URL: ${DATABASE_URL}
-      JWT_SECRET: ${JWT_SECRET}
-      SMTP_HOST: ${SMTP_HOST}
-      SMTP_PORT: ${SMTP_PORT}
-      SMTP_USER: ${SMTP_USER}
-      SMTP_PASS: ${SMTP_PASS}
-      SMTP_FROM: ${SMTP_FROM}
-      FRONTEND_URL: ${FRONTEND_URL}
-      DOMAIN: ${DOMAIN}
-      CORS_ORIGIN: ${CORS_ORIGIN}
-      SSL: ${SSL}
-      THROTTLER_LIMIT_SECONDS: ${THROTTLER_LIMIT_SECONDS}
-      THROTTLER_LIMIT_QUERIES: ${THROTTLER_LIMIT_QUERIES}
+      - '4040:4040'
+    env_file:
+      - ./backend/.env
     depends_on:
       - postgres
     networks:
