@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { ConfigService } from '@nestjs/config';
 
 import { type EnvConfig } from '../../common/interfaces/env-config';
+import { MESSAGES } from '../../common/constants/messages';
 
 @Injectable()
 export class MailerService {
@@ -10,18 +11,19 @@ export class MailerService {
 
     constructor(private readonly configService: ConfigService<EnvConfig>) {
         const host = this.configService.get<string>('SMTP_HOST');
-        const port = this.configService.get('SMTP_PORT');
+        const port = this.configService.get<number>('SMTP_PORT');
         const user = this.configService.get<string>('SMTP_USER');
         const pass = this.configService.get<string>('SMTP_PASS');
 
         this.transporter = nodemailer.createTransport({
             host,
             port,
-            secure: false,
+            secure: true,
             auth: {
                 user,
                 pass,
             },
+            connectionTimeout: 20000,
         });
     }
 
@@ -33,16 +35,21 @@ export class MailerService {
      * @returns Promise, который выполняется при успешной отправке письма.
      */
     public async sendConfirmationEmail(email: string, confirmationLink: string) {
-        const mailOptions = {
-            from: process.env.SMTP_FROM || '"No Reply" <no-reply@example.com>',
-            to: email,
-            subject: 'Подтверждение регистрации',
-            text: `Пожалуйста, подтвердите вашу регистрацию, перейдя по ссылке: ${confirmationLink}`,
-            html: `<p>Пожалуйста, подтвердите вашу регистрацию, перейдя по ссылке:</p>
+        try {
+            const mailOptions = {
+                from: this.configService.get<string>('SMTP_FROM'),
+                to: email,
+                subject: 'Подтверждение регистрации',
+                text: `Пожалуйста, подтвердите вашу регистрацию, перейдя по ссылке: ${confirmationLink}`,
+                html: `<p>Пожалуйста, подтвердите вашу регистрацию, перейдя по ссылке:</p>
              <a href="${confirmationLink}">${confirmationLink}</a>`,
-        };
+            };
 
-        await this.transporter.sendMail(mailOptions);
+            await this.transporter.sendMail(mailOptions);
+        }
+        catch {
+            throw new ConflictException(MESSAGES.EMAIL_SEND_FAILED);
+        }
     }
 
     /**

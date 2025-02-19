@@ -23,10 +23,11 @@ import { Google as GoogleIcon, Facebook as FacebookIcon } from '@mui/icons-mater
 import { useRegisterForm } from '../_model/use-register-form';
 import { Roles } from '../_model/auth.enums';
 import { MESSAGES } from '@/common/constants/messages';
-import { ROUTER_MAP } from '@/common/constants/router-map';
+import { CLIENT_MAP } from '@/common/constants/client-map';
 import { CustomLink } from '@/common/components/custom-link';
 import { CustomStepper } from '@/common/components/custom-stepper/ui/custom-stepper';
 import { type StepDefinition } from '@/common/components/custom-stepper/model/custom-stepper.interfaces';
+import { REG_EXP } from '@/common/constants/reg-exp';
 
 const steps: StepDefinition[] = [
     { label: 'Введите email', Icon: MailOutlineIcon },
@@ -45,7 +46,7 @@ export default function RegisterForm() {
         handleNext,
         registerMutation,
         handleSocialRegistration
-    } = useRegisterForm();
+    } = useRegisterForm({ stepsLength: steps.length });
 
     return (
         <Container maxWidth="xs">
@@ -63,7 +64,12 @@ export default function RegisterForm() {
                             label="Email"
                             autoComplete="email"
                             autoFocus
-                            {...register('email', { required: MESSAGES.EMAIL_REQUIRED })}
+                            {...register('email', {
+                                required: MESSAGES.EMAIL_REQUIRED, pattern: {
+                                    value: REG_EXP.EMAIL,
+                                    message: MESSAGES.EMAIL_INVALID,
+                                }
+                            })}
                             error={!!errors.email}
                             helperText={errors.email?.message}
                         />
@@ -137,9 +143,10 @@ export default function RegisterForm() {
                                 variant="contained"
                                 fullWidth
                                 disabled={registerMutation.isPending}
+                                loading={registerMutation.isPending}
                                 sx={{ ml: activeStep > 0 ? 2 : 0 }}
                             >
-                                {registerMutation.isPending ? 'Регистрация...' : 'Зарегистрироваться'}
+                                Зарегистрироваться
                             </Button>
                         )}
                     </Box>
@@ -153,7 +160,7 @@ export default function RegisterForm() {
                         </IconButton>
                     </Box>
                     <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                        <CustomLink href={ROUTER_MAP.AUTH.LOGIN} variant="body2">
+                        <CustomLink href={CLIENT_MAP.AUTH.LOGIN} variant="body2">
                             Уже зарегистрированы? Войти
                         </CustomLink>
                     </Box>

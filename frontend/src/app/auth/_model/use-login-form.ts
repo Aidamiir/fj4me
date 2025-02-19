@@ -5,7 +5,7 @@ import { useForm, type SubmitHandler } from 'react-hook-form';
 import { ACCESS_TOKEN_KEY } from './auth.constants';
 import { AuthService } from './auth.service';
 import { MESSAGES } from '@/common/constants/messages';
-import { ROUTER_MAP } from '@/common/constants/router-map';
+import { CLIENT_MAP } from '@/common/constants/client-map';
 import { useToastStore } from '@/common/components/toast/model/useToastStore';
 
 type LoginFormInputs = {
@@ -27,7 +27,7 @@ export const useLoginForm = () => {
         onSuccess: (res) => {
             addToast({ message: MESSAGES.LOGIN_SUCCESS, severity: 'success' });
             localStorage.setItem(ACCESS_TOKEN_KEY, res.accessToken);
-            router.replace(ROUTER_MAP.ROOT);
+            router.replace(CLIENT_MAP.ROOT);
         },
         onError: (error: unknown) => {
             addToast({ message: String(error), severity: 'error' });

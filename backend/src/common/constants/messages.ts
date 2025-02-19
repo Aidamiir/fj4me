@@ -7,6 +7,8 @@ export const MESSAGES = {
 
     EMAIL_CONFIRMATION_SUCCESS: 'Email подтвержден успешно',
     EMAIL_NOT_CONFIRMED: 'Email не подтверждён',
+    EMAIL_SEND_FAILED: 'Произошла ошибка при отправке письма на почту',
+    EMAIL_CONFIRMATION_RESENT: 'Ваш аккаунт не подтвержден и письмо подтверждения истекло. Новое письмо отправлено на почту',
 
     CONFIRMATION_INVALID: 'Неверный токен подтверждения',
     CONFIRMATION_EXPIRED: 'Токен подтверждения истёк',
@@ -24,7 +26,9 @@ export const MESSAGES = {
     SESSION_NOT_FOUND: 'Сессия не найдена',
     VACANCY_NOT_FOUND: 'Вакансия не найдена',
     APPLICATION_NOT_FOUND: 'Отклик не найден',
+
     USER_NOT_FOUND: 'Пользователь с таким email не найден',
+    USER_ALREADY_EXIST: 'Пользователь с такими данными уже существует',
 
     ACCESS_DENIED: 'Доступ запрещен',
     INTERNAL_SERVER_ERROR: 'Ошибка на стороне сервера'

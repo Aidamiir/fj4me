@@ -20,7 +20,7 @@ export function ThemeToggle() {
 
     return (
         <IconButton onClick={handleToggle} color="inherit">
-            {mode === ThemeModeEnum.Light ? <DarkModeIcon/> : <LightModeIcon/>}
+            {mode === ThemeModeEnum.Light ? <DarkModeIcon color="primary"/> : <LightModeIcon/>}
         </IconButton>
     );
 }

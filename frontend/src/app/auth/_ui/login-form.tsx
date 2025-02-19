@@ -4,7 +4,7 @@ import { Container, Box, TextField, Button, Typography, Divider, IconButton } fr
 import { Google as GoogleIcon, Facebook as FacebookIcon } from '@mui/icons-material';
 
 import { useLoginForm } from '../_model/use-login-form';
-import { ROUTER_MAP } from '@/common/constants/router-map';
+import { CLIENT_MAP } from '@/common/constants/client-map';
 import { CustomLink } from '@/common/components/custom-link';
 
 export const LoginForm = () => {
@@ -53,9 +53,10 @@ export const LoginForm = () => {
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
+                        loading={loginMutation.isPending}
                         disabled={loginMutation.isPending}
                     >
-                        {loginMutation.isPending ? 'Вход...' : 'Войти'}
+                        Войти
                     </Button>
                     <Divider>или</Divider>
                     <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
@@ -70,7 +71,7 @@ export const LoginForm = () => {
                         <CustomLink href="#" variant="body2">
                             Забыли пароль?
                         </CustomLink>
-                        <CustomLink href={ROUTER_MAP.AUTH.REGISTER} variant="body2">
+                        <CustomLink href={CLIENT_MAP.AUTH.REGISTER.ROOT} variant="body2">
                             Регистрация
                         </CustomLink>
                     </Box>

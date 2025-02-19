@@ -1,13 +1,14 @@
 import { type SubmitHandler, useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { Roles } from './auth.enums';
 import { AuthService } from './auth.service';
 import { MESSAGES } from '@/common/constants/messages';
-import { ROUTER_MAP } from '@/common/constants/router-map';
+import { CLIENT_MAP } from '@/common/constants/client-map';
 import { useToastStore } from '@/common/components/toast/model/useToastStore';
+import { REG_EXP } from '@/common/constants/reg-exp';
 
 interface IRegisterFormInputs {
     email: string;
@@ -16,7 +17,7 @@ interface IRegisterFormInputs {
     role: Roles;
 }
 
-export const useRegisterForm = () => {
+export const useRegisterForm = ({ stepsLength }: { stepsLength: number }) => {
     const router = useRouter();
     const addToast = useToastStore((state) => state.addToast);
     const [activeStep, setActiveStep] = useState(0);
@@ -44,45 +45,57 @@ export const useRegisterForm = () => {
         },
         onSuccess: () => {
             addToast({ message: MESSAGES.REGISTER_SUCCESS, severity: 'success' });
-            router.replace(ROUTER_MAP.ROOT);
+            router.replace(CLIENT_MAP.ROOT);
         },
         onError: (error: unknown) => {
-            const errorMsg = error instanceof Error ? error.message : String(error);
-            addToast({ message: errorMsg, severity: 'error' });
+            addToast({ message: String(error), severity: 'error' });
         },
     });
 
-    const handleNext = () => {
-        if (activeStep === 0) {
-            const email = getValues('email');
-            if (!email) {
-                addToast({ message: MESSAGES.EMAIL_REQUIRED, severity: 'error' });
-                return;
+    const handleNext = useCallback(() => {
+        setActiveStep((prevStep) => {
+            if (prevStep === 0) {
+                const email = getValues('email');
+                if (!email) {
+                    addToast({ message: MESSAGES.EMAIL_REQUIRED, severity: 'error' });
+                    return prevStep;
+                }
+                if (!REG_EXP.EMAIL.test(email)) {
+                    addToast({ message: MESSAGES.EMAIL_INVALID, severity: 'error' });
+                    return prevStep;
+                }
+            } else if (prevStep === 1) {
+                const password = getValues('password');
+                const confirmPassword = getValues('confirmPassword');
+                if (!password || password.length < 6) {
+                    addToast({
+                        message: `${MESSAGES.PASSWORD_REQUIRED} и ${MESSAGES.PASSWORD_MIN_LENGTH}`,
+                        severity: 'error',
+                    });
+                    return prevStep;
+                }
+                if (password !== confirmPassword) {
+                    addToast({ message: MESSAGES.PASSWORDS_MISMATCH, severity: 'error' });
+                    return prevStep;
+                }
             }
-        }
-        else if (activeStep === 1) {
-            const password = getValues('password');
-            const confirmPassword = getValues('confirmPassword');
-            if (!password || password.length < 6) {
-                addToast({
-                    message: `${MESSAGES.PASSWORD_REQUIRED} и ${MESSAGES.PASSWORD_MIN_LENGTH}`,
-                    severity: 'error',
-                });
-                return;
+
+            if (prevStep !== stepsLength - 1) {
+                return prevStep + 1;
             }
-            if (password !== confirmPassword) {
-                addToast({ message: MESSAGES.PASSWORDS_MISMATCH, severity: 'error' });
-                return;
-            }
-        }
-        setActiveStep((prev) => prev + 1);
-    };
+
+            return prevStep;
+        });
+    }, [getValues, addToast, stepsLength]);
 
     const handleBack = () => {
         setActiveStep((prev) => prev - 1);
     };
 
     const onSubmit: SubmitHandler<IRegisterFormInputs> = (data) => {
+        if (activeStep !== stepsLength - 1) {
+            return;
+        }
         registerMutation.mutate(data);
     };
 
@@ -92,6 +105,19 @@ export const useRegisterForm = () => {
             severity: 'info',
         });
     };
+
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Enter') {
+                handleNext();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [handleNext]);
 
     return {
         control,

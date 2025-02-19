@@ -3,6 +3,7 @@ import { type EnvConfig } from '../interfaces/env-config';
 
 export const validationSchema = Joi.object<EnvConfig>({
     DATABASE_URL: Joi.string().uri().required(),
+    FRONTEND_URL: Joi.string().uri().required(),
 
     SSL:  Joi.boolean().required(),
     PORT: Joi.number().required(),
@@ -15,6 +16,7 @@ export const validationSchema = Joi.object<EnvConfig>({
     SMTP_PORT: Joi.number().required(),
     SMTP_USER: Joi.string().required(),
     SMTP_PASS: Joi.string().required(),
+    SMTP_FROM: Joi.string().required(),
 
     THROTTLER_LIMIT_SECONDS: Joi.number().required(),
     THROTTLER_LIMIT_QUERIES: Joi.number().required(),

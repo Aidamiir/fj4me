@@ -13,7 +13,7 @@ export class ApiService {
 
     private async handleUnauthorized() {
         const url = (this.unauthorizedUrl ?? this.baseUrl) + API_MAP.AUTH.REFRESH;
-        const response = await fetch(url, { credentials: 'include' });
+        const response = await fetch(url, { credentials: 'include', method: 'POST' });
         const json = await response.json() as ApiResponse<IRefreshTokensResponse>;
 
         if (!json.success || !json.data) {

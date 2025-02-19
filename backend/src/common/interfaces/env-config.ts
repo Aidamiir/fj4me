@@ -1,5 +1,6 @@
 export interface EnvConfig {
     DATABASE_URL: string;
+    FRONTEND_URL: string;
 
     SSL: boolean;
     PORT: number;
@@ -12,6 +13,7 @@ export interface EnvConfig {
     SMTP_PORT: number;
     SMTP_USER: string;
     SMTP_PASS: string;
+    SMTP_FROM: string;
 
     THROTTLER_LIMIT_SECONDS: number;
     THROTTLER_LIMIT_QUERIES: number;

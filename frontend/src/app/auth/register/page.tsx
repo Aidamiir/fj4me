@@ -1,9 +1,20 @@
-import RegisterForm from '../_ui/register-form';
+import { Suspense } from 'react';
+import { Box, Typography } from '@mui/material';
+import { ConfirmationMessage } from '@/app/auth/_ui/confirmation-message';
 
 export default function RegisterPage() {
     return (
-        <div className="h-screen flex items-center justify-center">
-            <RegisterForm/>
-        </div>
+        <Box
+            sx={{
+                height: '100vh',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}
+        >
+            <Suspense fallback={<Typography>Загрузка...</Typography>}>
+                <ConfirmationMessage/>
+            </Suspense>
+        </Box>
     );
 }

@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { type Response } from 'express';
@@ -29,7 +29,8 @@ export class AuthService {
         private readonly mailerService: MailerService,
         private readonly sessionService: SessionService,
         private readonly configService: ConfigService<EnvConfig>,
-    ) {}
+    ) {
+    }
 
     /**
      * Регистрирует нового пользователя, генерирует токен подтверждения и отправляет письмо для подтверждения регистрации.
@@ -39,26 +40,37 @@ export class AuthService {
      * @returns Созданного пользователя.
      */
     public async register(email: string, password: string, role: Role) {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const token = randomBytes(32).toString('hex');
-        const expiresAt = new Date(Date.now() + this.CONFIRMATION_TOKEN_EXPIRES_MS);
-        const user = await this.prisma.user.create({
-            data: {
-                email,
-                password: hashedPassword,
-                role,
-                isEmailConfirmed: false,
-                confirmationToken: token,
-                confirmationExpiresAt: expiresAt,
-            },
-        });
-        const host = this.configService.get<string>('HOST');
-        const port = this.configService.get<string>('PORT');
-        const protocol = this.configService.get<boolean>('SSL') ? 'http' : 'https';
-        const confirmationLink = `${protocol}://${host}:${port}/auth/confirm?token=${token}`;
+        const existingUser = await this.prisma.user.findUnique({ where: { email: email } });
 
-        await this.mailerService.sendConfirmationEmail(email, confirmationLink);
-        return user;
+        if (existingUser) {
+            throw new ConflictException(MESSAGES.USER_ALREADY_EXIST);
+        }
+
+        return this.prisma.$transaction(async (prisma) => {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            const token = randomBytes(32).toString('hex');
+            const expiresAt = new Date(Date.now() + this.CONFIRMATION_TOKEN_EXPIRES_MS);
+
+            const user = await prisma.user.create({
+                data: {
+                    email,
+                    password: hashedPassword,
+                    role,
+                    isEmailConfirmed: false,
+                    confirmationToken: token,
+                    confirmationExpiresAt: expiresAt,
+                },
+            });
+
+            const host = this.configService.get<string>('HOST');
+            const port = this.configService.get<string>('PORT');
+            const protocol = this.configService.get<boolean>('SSL') ? 'https' : 'http';
+            const confirmationLink = `${protocol}://${host}:${port}/auth/confirm?token=${token}`;
+
+            await this.mailerService.sendConfirmationEmail(email, confirmationLink);
+
+            return user;
+        });
     }
 
     /**
@@ -75,6 +87,7 @@ export class AuthService {
         if (user.confirmationExpiresAt && new Date() > user.confirmationExpiresAt) {
             throw new UnauthorizedException(MESSAGES.CONFIRMATION_EXPIRED);
         }
+
         return this.prisma.user.update({
             where: { id: user.id },
             data: {
@@ -93,11 +106,21 @@ export class AuthService {
      * @throws UnauthorizedException, если email не подтвержден.
      */
     public async validateUser(email: string, password: string) {
-        const user = await this.prisma.user.findUnique({ where: { email } });
+        const user = await this.prisma.user.findUnique({ where: { email: email } });
+
         if (user && (await bcrypt.compare(password, user.password))) {
-            if (!user.isEmailConfirmed) {
-                throw new UnauthorizedException(MESSAGES.EMAIL_NOT_CONFIRMED);
+            if (user.confirmationExpiresAt && user.confirmationExpiresAt < new Date()) {
+                const token = randomBytes(32).toString('hex');
+                const host = this.configService.get<string>('HOST');
+                const port = this.configService.get<string>('PORT');
+                const protocol = this.configService.get<boolean>('SSL') ? 'https' : 'http';
+                const confirmationLink = `${protocol}://${host}:${port}/auth/confirm?token=${token}`;
+
+                await this.mailerService.sendConfirmationEmail(email, confirmationLink);
+
+                throw new UnauthorizedException(MESSAGES.EMAIL_CONFIRMATION_RESENT);
             }
+
             const { password, ...result } = user;
             return result;
         }
@@ -111,7 +134,7 @@ export class AuthService {
      * @throws UnauthorizedException, если пользователь с таким email не найден.
      */
     public async requestPasswordReset(email: string) {
-        const user = await this.prisma.user.findUnique({ where: { email } });
+        const user = await this.prisma.user.findUnique({ where: { email: email } });
         if (!user) {
             throw new UnauthorizedException(MESSAGES.USER_NOT_FOUND);
         }

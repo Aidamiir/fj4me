@@ -1,4 +1,16 @@
-import { Controller, Post, Body, UnauthorizedException, Req, Res, UseGuards, Query, Get } from '@nestjs/common';
+import {
+    Controller,
+    Post,
+    Body,
+    Req,
+    Res,
+    UseGuards,
+    Query,
+    Get,
+    UnauthorizedException,
+    ForbiddenException
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import type { Request, Response } from 'express';
 
 import { AuthService } from './auth.service';
@@ -8,11 +20,16 @@ import { AuthRegisterDto } from './dto/auth-register.dto';
 import { RequestResetDto } from './dto/request-reset.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { MESSAGES } from '../../common/constants/messages';
+import { CLIENT_MAP } from '../../common/constants/client-map';
+import type { EnvConfig } from '../../common/interfaces/env-config';
 import type { IAuthenticatedUser } from './interfaces/authenticated-user.interface';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private readonly authService: AuthService) {}
+    constructor(
+        private readonly authService: AuthService,
+        private readonly configService: ConfigService<EnvConfig>,
+    ) {}
 
     /**
      * Регистрирует нового пользователя и отправляет письмо с подтверждением.
@@ -26,8 +43,18 @@ export class AuthController {
      * Подтверждает email пользователя по переданному токену.
      */
     @Get('confirm')
-    public async confirmEmail(@Query('token') token: string) {
-        await this.authService.confirmEmail(token);
+    public async confirmEmail(
+        @Query('token') token: string,
+        @Res({ passthrough: true }) res: Response,
+    ) {
+        const frontendUrl = this.configService.get<string>('FRONTEND_URL');
+        try {
+            await this.authService.confirmEmail(token);
+            return res.redirect(frontendUrl + CLIENT_MAP.AUTH.REGISTER.ROOT + `?${CLIENT_MAP.AUTH.REGISTER.CONFIRM_QUERY}?=true`);
+        }
+        catch {
+            return res.redirect(frontendUrl + CLIENT_MAP.AUTH.REGISTER.ROOT + `?${CLIENT_MAP.AUTH.REGISTER.CONFIRM_QUERY}=false`);
+        }
     }
 
     /**
@@ -40,7 +67,7 @@ export class AuthController {
     ) {
         const user = await this.authService.validateUser(body.email, body.password);
         if (!user) {
-            throw new UnauthorizedException(MESSAGES.LOGIN_FAILURE);
+            throw new ForbiddenException(MESSAGES.LOGIN_FAILURE);
         }
         const { refreshToken, ...response } = await this.authService.login(user);
         this.authService.setRefreshTokenFromCookie(refreshToken, res);
