@@ -1,6 +1,10 @@
 export const MESSAGES = {
     LOGIN_SUCCESS: 'Вы успешно вошли в систему!',
     REGISTER_SUCCESS: 'Вы успешно зарегистрировались, но необходимо подтвердить почту',
+    REQUEST_RESET_SUCCESS: 'Письмо с инструкциями по сбросу пароля отправлено вам на почту',
+    RESET_PASSWORD_SUCCESS: 'Пароль успешно сброшен!',
+    RESET_PASSWORD_LINK_INVALID: 'Ссылка на сброс пароля испорчена, вернитесь к восстановлению пароля и получите новую ссылку',
+
     EMAIL_REQUIRED: 'Email обязателен',
     EMAIL_INVALID: 'Неверный формат email',
     PASSWORD_REQUIRED: 'Пароль обязателен',

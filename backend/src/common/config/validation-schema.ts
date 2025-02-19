@@ -5,6 +5,7 @@ export const validationSchema = Joi.object<EnvConfig>({
     DATABASE_URL: Joi.string().uri().required(),
     FRONTEND_URL: Joi.string().uri().required(),
 
+    DOMAIN: Joi.string().required(),
     SSL:  Joi.boolean().required(),
     PORT: Joi.number().required(),
     HOST: Joi.string().hostname().required(),

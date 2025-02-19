@@ -1,6 +1,7 @@
 import type { IRefreshTokensResponse } from '@/app/auth/_model/auth.interfaces';
 import type { ApiResponse } from './api.interfaces';
 import { API_MAP } from './api-map';
+import { CLIENT_MAP } from '../constants/client-map';
 
 export class ApiService {
     private readonly baseUrl: string;
@@ -11,12 +12,32 @@ export class ApiService {
         this.unauthorizedUrl = unauthorizedUrl;
     }
 
+    private async logout() {
+        try {
+            await fetch(this.baseUrl + API_MAP.AUTH.LOGOUT, { method: 'POST', credentials: 'include' });
+        }
+        catch (error) {
+            console.error(error);
+        }
+        finally {
+            window.location.href = CLIENT_MAP.AUTH.LOGIN;
+        }
+    }
+
     private async handleUnauthorized() {
         const url = (this.unauthorizedUrl ?? this.baseUrl) + API_MAP.AUTH.REFRESH;
+
         const response = await fetch(url, { credentials: 'include', method: 'POST' });
+
+        if (response.status === 401) {
+            await this.logout();
+            throw new Error(response.statusText);
+        }
+
         const json = await response.json() as ApiResponse<IRefreshTokensResponse>;
 
-        if (!json.success || !json.data) {
+        if (!json.success || !json.data || !json.data.accessToken) {
+            await this.logout();
             throw new Error(json.message);
         }
 
@@ -32,7 +53,8 @@ export class ApiService {
                 ...options,
                 headers: this.mergeHeaders(options?.headers),
             });
-        } catch (error) {
+        }
+        catch (error) {
             console.error('Ошибка сети:', error);
             throw new Error('Нет интернет-соединения или сервер недоступен');
         }
@@ -60,7 +82,8 @@ export class ApiService {
             headers.forEach((value, key) => {
                 headerObj[key] = value;
             });
-        } else if (typeof headers === 'object') {
+        }
+        else if (typeof headers === 'object') {
             headerObj = { ...headers } as Record<string, string>;
         }
 

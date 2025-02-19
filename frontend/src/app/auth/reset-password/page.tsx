@@ -1,8 +1,8 @@
 import { Suspense } from 'react';
 import { Box, Typography } from '@mui/material';
-import { ConfirmationMessage } from './_ui/confirmation-message';
+import ResetPasswordForm from './_ui/reset-password-form';
 
-export default function RegisterPage() {
+export default function ResetPasswordPage() {
     return (
         <Box
             sx={{
@@ -13,7 +13,7 @@ export default function RegisterPage() {
             }}
         >
             <Suspense fallback={<Typography>Загрузка...</Typography>}>
-                <ConfirmationMessage/>
+                <ResetPasswordForm/>
             </Suspense>
         </Box>
     );

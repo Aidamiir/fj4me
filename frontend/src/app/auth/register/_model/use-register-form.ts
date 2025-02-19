@@ -1,12 +1,10 @@
 import { type SubmitHandler, useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
-import { Roles } from './auth.enums';
-import { AuthService } from './auth.service';
+import { Roles } from '../../_model/auth.enums';
+import { AuthService } from '../../_model/auth.service';
 import { MESSAGES } from '@/common/constants/messages';
-import { CLIENT_MAP } from '@/common/constants/client-map';
 import { useToastStore } from '@/common/components/toast/model/useToastStore';
 import { REG_EXP } from '@/common/constants/reg-exp';
 
@@ -18,9 +16,9 @@ interface IRegisterFormInputs {
 }
 
 export const useRegisterForm = ({ stepsLength }: { stepsLength: number }) => {
-    const router = useRouter();
     const addToast = useToastStore((state) => state.addToast);
     const [activeStep, setActiveStep] = useState(0);
+    const [isFinished, setIsFinished] = useState(false);
 
     const {
         control,
@@ -45,7 +43,7 @@ export const useRegisterForm = ({ stepsLength }: { stepsLength: number }) => {
         },
         onSuccess: () => {
             addToast({ message: MESSAGES.REGISTER_SUCCESS, severity: 'success' });
-            router.replace(CLIENT_MAP.ROOT);
+            setIsFinished(true);
         },
         onError: (error: unknown) => {
             addToast({ message: String(error), severity: 'error' });
@@ -120,6 +118,7 @@ export const useRegisterForm = ({ stepsLength }: { stepsLength: number }) => {
     }, [handleNext]);
 
     return {
+        isFinished,
         control,
         register,
         handleSubmit: handleSubmit(onSubmit),

@@ -13,8 +13,6 @@ export const ConfirmationMessage = () => {
     const searchParams = useSearchParams();
     const isConfirmed = searchParams.get('confirmed');
 
-    console.log(isConfirmed);
-
     return isConfirmed ? (
         <Paper elevation={6} sx={{ p: 4, textAlign: 'center', maxWidth: 440 }}>
             {isConfirmed === 'true' ? (
@@ -24,7 +22,7 @@ export const ConfirmationMessage = () => {
                         Почта успешно подтверждена!
                     </Typography>
                     <Typography variant="body1" sx={{ mb: 2 }}>
-                        Теперь вы можете войти в свою учётную запись.
+                        Теперь вы можете войти в свою учётную запись
                     </Typography>
                     <Button variant="contained" color="primary" component={Link} href={CLIENT_MAP.AUTH.LOGIN}>
                         Перейти к входу
@@ -36,7 +34,7 @@ export const ConfirmationMessage = () => {
                         Произошла ошибка при подтверждении почты
                     </Typography>
                     <Typography variant="body1" sx={{ mb: 2 }}>
-                        Возможно ссылка истекла, вернитесь к входу и получите новое письмо подтвеждения
+                        Возможно ссылка истекла, вернитесь к входу и получите новое письмо подтверждения
                     </Typography>
                     <Button variant="contained" color="primary" component={Link} href={CLIENT_MAP.AUTH.LOGIN}>
                         Перейти к входу

@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
-import { LoginForm } from './_ui/login-form';
+import { RequestResetForm } from './_ui/request-reset-form';
 
-export default function LoginPage() {
+export default function RequesterResetPage() {
     return (
         <Box
             sx={{
@@ -11,7 +11,7 @@ export default function LoginPage() {
                 alignItems: 'center',
             }}
         >
-            <LoginForm/>
+            <RequestResetForm/>
         </Box>
-    )
+    );
 }

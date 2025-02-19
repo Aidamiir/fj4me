@@ -14,14 +14,16 @@ import {
     MenuItem,
     Divider,
     IconButton,
+    Paper,
 } from '@mui/material';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { Google as GoogleIcon, Facebook as FacebookIcon } from '@mui/icons-material';
 
 import { useRegisterForm } from '../_model/use-register-form';
-import { Roles } from '../_model/auth.enums';
+import { Roles } from '../../_model/auth.enums';
 import { MESSAGES } from '@/common/constants/messages';
 import { CLIENT_MAP } from '@/common/constants/client-map';
 import { CustomLink } from '@/common/components/custom-link';
@@ -37,6 +39,7 @@ const steps: StepDefinition[] = [
 
 export default function RegisterForm() {
     const {
+        isFinished,
         control,
         register,
         handleSubmit,
@@ -48,7 +51,7 @@ export default function RegisterForm() {
         handleSocialRegistration
     } = useRegisterForm({ stepsLength: steps.length });
 
-    return (
+    return !isFinished ? (
         <Container maxWidth="xs">
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 8 }}>
                 <Typography component="h1" variant="h5">
@@ -167,5 +170,15 @@ export default function RegisterForm() {
                 </Box>
             </Box>
         </Container>
+    ) : (
+        <Paper elevation={6} sx={{ p: 4, textAlign: 'center', maxWidth: 440 }}>
+            <CheckCircleOutlineIcon sx={{ fontSize: 60, color: 'green', mb: 2 }}/>
+            <Typography variant="h5" gutterBottom>
+                Регистрация прошла успешно!
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 2 }}>
+                Теперь вы можете перейти на почту и подтвердить ее
+            </Typography>
+        </Paper>
     );
 }

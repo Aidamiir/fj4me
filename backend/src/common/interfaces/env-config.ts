@@ -2,6 +2,7 @@ export interface EnvConfig {
     DATABASE_URL: string;
     FRONTEND_URL: string;
 
+    DOMAIN: string;
     SSL: boolean;
     PORT: number;
     HOST: string;

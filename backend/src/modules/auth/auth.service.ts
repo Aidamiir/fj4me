@@ -1,4 +1,10 @@
-import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+    BadRequestException,
+    ConflictException,
+    Injectable,
+    NotFoundException,
+    UnauthorizedException
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { type Response } from 'express';
@@ -12,6 +18,7 @@ import { SessionService } from '../session/session.service';
 import { type EnvConfig } from '../../common/interfaces/env-config';
 import { computeHash, encrypt } from '../../common/helpers/bcrypt.helpers';
 import { MESSAGES } from '../../common/constants/messages';
+import { CLIENT_MAP } from '../../common/constants/client-map';
 
 @Injectable()
 export class AuthService {
@@ -136,7 +143,7 @@ export class AuthService {
     public async requestPasswordReset(email: string) {
         const user = await this.prisma.user.findUnique({ where: { email: email } });
         if (!user) {
-            throw new UnauthorizedException(MESSAGES.USER_NOT_FOUND);
+            throw new NotFoundException(MESSAGES.USER_NOT_FOUND);
         }
         const token = randomBytes(32).toString('hex');
         const expiresAt = new Date(Date.now() + this.RESET_TOKEN_EXPIRES_MS);
@@ -147,10 +154,8 @@ export class AuthService {
                 resetPasswordExpiresAt: expiresAt,
             },
         });
-        const host = this.configService.get<string>('HOST');
-        const port = this.configService.get<string>('PORT');
-        const protocol = this.configService.get<boolean>('SSL') ? 'http' : 'https';
-        const resetLink = `${protocol}://${host}:${port}/auth/reset-password?token=${token}`;
+        const frontendUrl = this.configService.get<string>('FRONTEND_URL');
+        const resetLink = `${frontendUrl + CLIENT_MAP.AUTH.RESET_PASSWORD.ROOT}?${CLIENT_MAP.AUTH.RESET_PASSWORD.TOKEN_QUERY}=${token}`;
 
         await this.mailerService.sendPasswordResetEmail(email, resetLink);
     }
@@ -262,6 +267,7 @@ export class AuthService {
     public setRefreshTokenFromCookie(refreshToken: string, res: Response) {
         res.cookie(this.REFRESH_TOKEN_KEY, refreshToken, {
             httpOnly: true,
+            domain: this.configService.get<string>('DOMAIN'),
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
             maxAge: this.REFRESH_TOKEN_EXPIRES_MS,

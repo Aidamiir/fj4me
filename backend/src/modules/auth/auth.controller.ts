@@ -94,7 +94,6 @@ export class AuthController {
     /**
      * Выполняет выход пользователя, удаляя сессию и очищая refresh token cookie.
      */
-    @UseGuards(JwtAuthGuard)
     @Post('logout')
     public async logout(
         @Req() req: Request,

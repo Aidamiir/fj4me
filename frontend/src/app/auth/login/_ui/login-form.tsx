@@ -68,7 +68,7 @@ export const LoginForm = () => {
                         </IconButton>
                     </Box>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-                        <CustomLink href="#" variant="body2">
+                        <CustomLink href={CLIENT_MAP.AUTH.REQUEST_RESET} variant="body2">
                             Забыли пароль?
                         </CustomLink>
                         <CustomLink href={CLIENT_MAP.AUTH.REGISTER.ROOT} variant="body2">

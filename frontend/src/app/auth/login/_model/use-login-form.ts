@@ -2,13 +2,13 @@ import { useRouter } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 
-import { ACCESS_TOKEN_KEY } from './auth.constants';
-import { AuthService } from './auth.service';
+import { ACCESS_TOKEN_KEY } from '../../_model/auth.constants';
+import { AuthService } from '../../_model/auth.service';
 import { MESSAGES } from '@/common/constants/messages';
 import { CLIENT_MAP } from '@/common/constants/client-map';
 import { useToastStore } from '@/common/components/toast/model/useToastStore';
 
-type LoginFormInputs = {
+type ILoginFormInputs = {
     email: string;
     password: string;
 };
@@ -17,13 +17,13 @@ export const useLoginForm = () => {
     const router = useRouter();
     const addToast = useToastStore((state) => state.addToast);
 
-    const { register, handleSubmit, formState: { errors } } = useForm<LoginFormInputs>({
+    const { register, handleSubmit, formState: { errors } } = useForm<ILoginFormInputs>({
         defaultValues: { email: '', password: '' },
         mode: 'onChange'
     });
 
     const loginMutation = useMutation({
-        mutationFn: (data: LoginFormInputs) => AuthService.login(data),
+        mutationFn: (data: ILoginFormInputs) => AuthService.login(data),
         onSuccess: (res) => {
             addToast({ message: MESSAGES.LOGIN_SUCCESS, severity: 'success' });
             localStorage.setItem(ACCESS_TOKEN_KEY, res.accessToken);
@@ -34,7 +34,7 @@ export const useLoginForm = () => {
         },
     });
 
-    const onSubmit: SubmitHandler<LoginFormInputs> = (data) => {
+    const onSubmit: SubmitHandler<ILoginFormInputs> = (data) => {
         loginMutation.mutate(data);
     };
 
