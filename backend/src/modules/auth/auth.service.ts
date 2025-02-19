@@ -2,13 +2,13 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { type Response } from 'express';
+import { type Role } from '@prisma/client';
 import { randomBytes } from 'crypto';
 import * as bcrypt from 'bcrypt';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { MailerService } from '../mailer/mailer.service';
 import { SessionService } from '../session/session.service';
-import { type RolesType } from '../../common/types/roles';
 import { type EnvConfig } from '../../common/interfaces/env-config';
 import { computeHash, encrypt } from '../../common/helpers/bcrypt.helpers';
 import { MESSAGES } from '../../common/constants/messages';
@@ -29,8 +29,7 @@ export class AuthService {
         private readonly mailerService: MailerService,
         private readonly sessionService: SessionService,
         private readonly configService: ConfigService<EnvConfig>,
-    ) {
-    }
+    ) {}
 
     /**
      * Регистрирует нового пользователя, генерирует токен подтверждения и отправляет письмо для подтверждения регистрации.
@@ -39,7 +38,7 @@ export class AuthService {
      * @param role Роль пользователя ('STUDENT' или 'EMPLOYER').
      * @returns Созданного пользователя.
      */
-    public async register(email: string, password: string, role: RolesType) {
+    public async register(email: string, password: string, role: Role) {
         const hashedPassword = await bcrypt.hash(password, 10);
         const token = randomBytes(32).toString('hex');
         const expiresAt = new Date(Date.now() + this.CONFIRMATION_TOKEN_EXPIRES_MS);
@@ -131,7 +130,6 @@ export class AuthService {
         const resetLink = `${protocol}://${host}:${port}/auth/reset-password?token=${token}`;
 
         await this.mailerService.sendPasswordResetEmail(email, resetLink);
-        return { message: MESSAGES.PASSWORD_RESET_INSTRUCTIONS_SENT };
     }
 
     /**
@@ -159,7 +157,6 @@ export class AuthService {
             },
         });
         await this.revokeUserSessions(user.id);
-        return { message: MESSAGES.PASSWORD_CHANGED_SUCCESS };
     }
 
     /**
@@ -258,7 +255,17 @@ export class AuthService {
         await this.prisma.session.deleteMany({
             where: { tokenHash },
         });
-        return { message: MESSAGES.LOGOUT_SUCCESS };
+    }
+
+    /**
+     * Выполняет выход пользователя, удаляя все сессии по userId.
+     * @param userId UserId для удаления всех токенов
+     * @returns Объект с сообщением об успешном выходе.
+     */
+    public async logoutAll(userId: number) {
+        await this.prisma.session.deleteMany({
+            where: { userId },
+        });
     }
 }
 

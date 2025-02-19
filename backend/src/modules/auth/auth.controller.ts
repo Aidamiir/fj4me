@@ -8,6 +8,7 @@ import { AuthRegisterDto } from './dto/auth-register.dto';
 import { RequestResetDto } from './dto/request-reset.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { MESSAGES } from '../../common/constants/messages';
+import type { IAuthenticatedUser } from './interfaces/authenticated-user.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -18,8 +19,7 @@ export class AuthController {
      */
     @Post('register')
     public async register(@Body() body: AuthRegisterDto) {
-        const user = await this.authService.register(body.email, body.password, body.role);
-        return { message: MESSAGES.REGISTER_SUCCESS, userId: user.id };
+        await this.authService.register(body.email, body.password, body.role);
     }
 
     /**
@@ -27,8 +27,7 @@ export class AuthController {
      */
     @Get('confirm')
     public async confirmEmail(@Query('token') token: string) {
-        const user = await this.authService.confirmEmail(token);
-        return { message: MESSAGES.EMAIL_CONFIRMATION_SUCCESS, userId: user.id };
+        await this.authService.confirmEmail(token);
     }
 
     /**
@@ -79,7 +78,23 @@ export class AuthController {
             await this.authService.logout(refreshToken);
         }
         res.clearCookie(this.authService.REFRESH_TOKEN_KEY);
-        return { message: MESSAGES.LOGOUT_SUCCESS };
+    }
+
+    /**
+     * Выполняет выход пользователя, удаляя все сессии по userId.
+     */
+    @UseGuards(JwtAuthGuard)
+    @Post('logout-all')
+    public async logoutAll(
+        @Req() req: Request,
+        @Res({ passthrough: true }) res: Response,
+    ) {
+        const user = req.user as IAuthenticatedUser;
+        const refreshToken = req.cookies?.[this.authService.REFRESH_TOKEN_KEY];
+        if (refreshToken && user.userId) {
+            await this.authService.logoutAll(user.userId);
+        }
+        res.clearCookie(this.authService.REFRESH_TOKEN_KEY);
     }
 
     /**

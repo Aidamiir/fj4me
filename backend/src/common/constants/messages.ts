@@ -3,6 +3,7 @@ export const MESSAGES = {
 
     LOGOUT_SUCCESS: 'Выход выполнен успешно',
     LOGIN_FAILURE: 'Неверные данные или email не подтвержден',
+    LOGOUT_ALL_SUCCESS: 'Все сессии завершены успешно',
 
     EMAIL_CONFIRMATION_SUCCESS: 'Email подтвержден успешно',
     EMAIL_NOT_CONFIRMED: 'Email не подтверждён',
@@ -26,4 +27,5 @@ export const MESSAGES = {
     USER_NOT_FOUND: 'Пользователь с таким email не найден',
 
     ACCESS_DENIED: 'Доступ запрещен',
+    INTERNAL_SERVER_ERROR: 'Ошибка на стороне сервера'
 } as const;
