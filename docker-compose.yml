@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:17.2
-    container_name: fj4me
+    container_name: fj4me-postgres
     restart: always
     environment:
       POSTGRES_USER: admin
