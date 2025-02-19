@@ -13,11 +13,6 @@ services:
       - db_data:/var/lib/postgresql/data
     networks:
       - app-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d fj4me-db"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   backend:
     build: ./backend
@@ -27,7 +22,13 @@ services:
     env_file:
       - ./backend/.env
     depends_on:
-      postgres:
-        condition: service_healthy
+      - postgres
     networks:
       - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db_data:
