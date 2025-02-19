@@ -1,22 +1,21 @@
-FROM node:16-alpine as build
+FROM oven/bun:latest as build
 
 WORKDIR /app
 
-COPY package.json ./
+COPY package.json bun.lockb ./
 
-RUN npm install
+RUN bun install
 
 COPY . .
 
-RUN npm run build
+RUN bun run build
 
-FROM node:16-alpine
+FROM oven/bun:latest
 
 WORKDIR /app
 
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app /app
 
 EXPOSE 4040
 
-CMD ["node", "dist/main.js"]
+CMD ["bun", "run", "start:prod"]
