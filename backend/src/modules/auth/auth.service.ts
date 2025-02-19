@@ -36,8 +36,7 @@ export class AuthService {
         private readonly mailerService: MailerService,
         private readonly sessionService: SessionService,
         private readonly configService: ConfigService<EnvConfig>,
-    ) {
-    }
+    ) {}
 
     /**
      * Регистрирует нового пользователя, генерирует токен подтверждения и отправляет письмо для подтверждения регистрации.
