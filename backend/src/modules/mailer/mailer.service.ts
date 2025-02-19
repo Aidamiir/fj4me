@@ -45,11 +45,9 @@ export class MailerService {
              <a href="${confirmationLink}">${confirmationLink}</a>`,
             };
 
-            const a = await this.transporter.sendMail(mailOptions);
-            console.log(a);
+            await this.transporter.sendMail(mailOptions);
         }
-        catch (error) {
-            console.log(error);
+        catch {
             throw new ConflictException(MESSAGES.EMAIL_SEND_FAILED);
         }
     }
