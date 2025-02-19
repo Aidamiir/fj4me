@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   postgres:
     image: postgres:17.2
@@ -12,32 +11,6 @@ services:
       - '5432:5432'
     volumes:
       - db_data:/var/lib/postgresql/data
-
-  backend:
-    build:
-      context: ./backend
-    container_name: fj4me-backend
-    environment:
-      - DATABASE_URL=postgresql://admin:123456@localhost:5432/fj4me-db?schema=public
-      - FRONTEND_URL=https://fj4me.pro
-      - DOMAIN=fj4me.pro
-      - SSL=true
-      - PORT=4040
-      - HOST=localhost
-      - CORS_ORIGIN=https://fj4me.pro
-      - JWT_SECRET=SECRET
-      - SMTP_HOST=smtp.yandex.com
-      - SMTP_PORT=465
-      - SMTP_USER=kambievv@yandex.ru
-      - SMTP_PASS=cdbyduhjoerreoaz
-      - SMTP_FROM=kambievv@yandex.ru
-      - THROTTLER_LIMIT_SECONDS=60
-      - THROTTLER_LIMIT_QUERIES=20
-    ports:
-      - "4040:4040"
-    depends_on:
-      - postgres
-    command: ["bun", "run", "start:prod"]
 
 volumes:
   db_data:
