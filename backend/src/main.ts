@@ -22,6 +22,7 @@ async function bootstrap() {
     app.useGlobalFilters(new AllExceptionsFilter());
     app.useGlobalInterceptors(new ResponseTransformInterceptor());
     app.use(helmet());
+    app.setGlobalPrefix('api');
     configurePipes(app);
     configureCors(app, configService);
     configureSwagger(app);
