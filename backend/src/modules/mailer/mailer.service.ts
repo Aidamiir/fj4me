@@ -18,10 +18,14 @@ export class MailerService {
         this.transporter = nodemailer.createTransport({
             host,
             port,
-            secure: true,
+            secure: false,
             auth: {
                 user,
                 pass,
+            },
+            tls: {
+                ciphers: 'SSLv3',
+                rejectUnauthorized: false,
             },
             connectionTimeout: 30000,
         });
