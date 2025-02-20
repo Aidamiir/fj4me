@@ -1,3 +1,4 @@
+import 'swiper/css';
 import './globals.css';
 
 import { type ReactNode } from 'react';

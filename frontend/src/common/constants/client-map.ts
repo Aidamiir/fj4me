@@ -12,5 +12,19 @@ export const CLIENT_MAP = {
             ROOT: '/auth/reset-password',
             TOKEN_QUERY: 'token',
         },
+    },
+    SEARCH: {
+        ROOT: '/search',
+    },
+    RESUMES: {
+        ROOT: '/resumes',
+        RECOMMENDED: '/resumes/recommend',
+    },
+    VACANCIES: {
+        ROOT: '/vacancies',
+        RECOMMENDED: '/vacancies/recommend',
+    },
+    PROFILE: {
+        ROOT: '/profile',
     }
 } as const;
