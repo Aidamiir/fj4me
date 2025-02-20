@@ -4,10 +4,9 @@ import Link from 'next/link';
 import { Container, Box, TextField, Typography, Paper, Button } from '@mui/material';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
-import { useResetPasswordForm } from '../_model/use-reset-password-form';
-import { MESSAGES } from '@/common/constants/messages';
-import { CLIENT_MAP } from '@/common/constants/client-map';
-import { CustomLink } from '@/common/components/custom-link';
+import { useResetPasswordForm } from '@/app/auth/reset-password/_model';
+import { CustomLink } from '@/components/custom-link';
+import { CLIENT_MAP, MESSAGES } from '@/common/constants';
 
 export default function ResetPasswordForm() {
     const { isFinished, handleSubmit, register, errors, resetPasswordIsPending } = useResetPasswordForm();
@@ -26,6 +25,7 @@ export default function ResetPasswordForm() {
                         label="Пароль"
                         type="password"
                         autoComplete="new-password"
+                        disabled={resetPasswordIsPending}
                         {...register('password', {
                             required: MESSAGES.PASSWORD_REQUIRED,
                             minLength: { value: 6, message: MESSAGES.PASSWORD_MIN_LENGTH },
@@ -40,6 +40,7 @@ export default function ResetPasswordForm() {
                         label="Подтверждение пароля"
                         type="password"
                         autoComplete="new-password"
+                        disabled={resetPasswordIsPending}
                         {...register('confirmPassword', { required: MESSAGES.CONFIRM_PASSWORD_REQUIRED })}
                         error={!!errors.confirmPassword}
                         helperText={errors.confirmPassword?.message}
@@ -50,7 +51,6 @@ export default function ResetPasswordForm() {
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
                         loading={resetPasswordIsPending}
-                        disabled={resetPasswordIsPending}
                     >
                         Отправить
                     </Button>

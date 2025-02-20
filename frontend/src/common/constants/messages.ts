@@ -1,5 +1,6 @@
 export const MESSAGES = {
     LOGIN_SUCCESS: 'Вы успешно вошли в систему!',
+    LOGOUT_SUCCESS: 'Вы успешно вышли из системы',
     REGISTER_SUCCESS: 'Вы успешно зарегистрировались, но необходимо подтвердить почту',
     REQUEST_RESET_SUCCESS: 'Письмо с инструкциями по сбросу пароля отправлено вам на почту',
     RESET_PASSWORD_SUCCESS: 'Пароль успешно сброшен!',

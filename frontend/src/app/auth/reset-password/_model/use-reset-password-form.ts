@@ -3,10 +3,9 @@ import { useMutation } from '@tanstack/react-query';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
-import { AuthService } from '../../_model/auth.service';
-import { MESSAGES } from '@/common/constants/messages';
-import { useToastStore } from '@/common/components/toast/model/useToastStore';
-import { CLIENT_MAP } from '@/common/constants/client-map';
+import { AuthService } from '@/app/auth/_model';
+import { CLIENT_MAP, MESSAGES } from '@/common/constants';
+import { useToastStore } from '@/components/toast';
 
 interface IResetPasswordFormInputs {
     password: string;

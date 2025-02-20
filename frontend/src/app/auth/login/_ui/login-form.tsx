@@ -5,12 +5,12 @@ import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Container, Box, TextField, Button, Typography, Divider, IconButton } from '@mui/material';
 
-import { useLoginForm } from '../_model/use-login-form';
-import { CLIENT_MAP } from '@/common/constants/client-map';
-import { CustomLink } from '@/common/components/custom-link';
-import { CustomStepper } from '@/common/components/custom-stepper/ui/custom-stepper';
-import { type StepDefinition } from '@/common/components/custom-stepper/model/custom-stepper.interfaces';
-import { GosuslugiIcon } from '@/common/components/gosuslugi-icon';
+import { useLoginForm } from '@/app/auth/login/_model';
+import { CLIENT_MAP } from '@/common/constants';
+import { CustomLink } from '@/components/custom-link';
+import { CustomStepper } from '@/components/custom-stepper';
+import { GosuslugiIcon } from '@/components/gosuslugi-icon';
+import { type StepDefinition } from '@/components/custom-stepper';
 
 const steps: StepDefinition[] = [
     { label: 'Введите email и пароль', Icon: MailOutlineIcon },
@@ -46,6 +46,7 @@ export const LoginForm = () => {
                                 label="Email"
                                 autoComplete="email"
                                 autoFocus
+                                disabled={requestCodePending || verifyCodePending}
                                 {...register('email', { required: 'Email обязателен' })}
                                 error={!!errors.email}
                                 helperText={errors.email?.message}
@@ -57,6 +58,7 @@ export const LoginForm = () => {
                                 label="Пароль"
                                 type="password"
                                 autoComplete="current-password"
+                                disabled={requestCodePending || verifyCodePending}
                                 {...register('password', { required: 'Пароль обязателен' })}
                                 error={!!errors.password}
                                 helperText={errors.password?.message}
@@ -70,6 +72,7 @@ export const LoginForm = () => {
                             fullWidth
                             label="Код"
                             autoFocus
+                            disabled={requestCodePending || verifyCodePending}
                             {...register('code', { required: 'Код обязателен' })}
                             error={!!errors.code}
                             helperText={errors.code?.message}
@@ -89,12 +92,12 @@ export const LoginForm = () => {
                             </Button>
                         )}
                         {activeStep < steps.length - 1 && (
-                            <Button variant="contained" onClick={handleNext} disabled={requestCodePending}>
+                            <Button variant="contained" onClick={handleNext} loading={requestCodePending}>
                                 Далее
                             </Button>
                         )}
                         {activeStep === steps.length - 1 && (
-                            <Button type="submit" variant="contained" disabled={verifyCodePending}>
+                            <Button type="submit" variant="contained" loading={verifyCodePending}>
                                 Войти
                             </Button>
                         )}

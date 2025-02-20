@@ -6,7 +6,7 @@ import { Stepper, Step, StepLabel, Box } from '@mui/material';
 import type {
     CustomStepIconProps,
     CustomStepperProps
-} from '../model/custom-stepper.interfaces';
+} from '@/components/custom-stepper';
 
 
 const CustomStepIcon: FC<CustomStepIconProps> = ({ active, completed, icon, steps }) => {

@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { Box, Typography } from '@mui/material';
-import { ConfirmationMessage } from './_ui/confirmation-message';
+
+import { ConfirmationMessage } from '@/app/auth/register/_ui';
 
 export default function RegisterPage() {
     return (

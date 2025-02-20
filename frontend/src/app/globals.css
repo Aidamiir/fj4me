@@ -3,9 +3,6 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-
   --primary-main-light: #1976d2;
   --primary-main-dark: #90caf9;
   --background-default-light: #f4f6f8;
@@ -14,16 +11,4 @@
   --background-paper-dark: #1e1e1e;
   --text-primary-light: #000000;
   --text-primary-dark: #ffffff;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
 }

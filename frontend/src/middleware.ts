@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-import { REFRESH_TOKEN_KEY } from '@/app/auth/_model/auth.constants';
-import { CLIENT_MAP } from '@/common/constants/client-map';
+import { REFRESH_TOKEN_KEY } from '@/app/auth/_model';
+import { CLIENT_MAP } from '@/common/constants';
 
 export function middleware(req: NextRequest) {
     const token = req.cookies.get(REFRESH_TOKEN_KEY)?.value;

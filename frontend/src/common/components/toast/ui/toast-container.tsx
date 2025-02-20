@@ -3,7 +3,7 @@
 import { Fragment } from 'react';
 import { Snackbar, Alert } from '@mui/material';
 
-import { useToastStore } from '../model/useToastStore';
+import { useToastStore } from '@/components/toast';
 
 export const ToastContainer = () => {
     const { toasts, removeToast } = useToastStore();

@@ -6,8 +6,7 @@ import type {
     IResetPasswordRequest,
     IResetRequest,
 } from './auth.interfaces';
-import { baseApi } from '@/common/api/base-api';
-import { API_MAP } from '@/common/api/api-map';
+import { API_MAP, baseApi } from '@/common/api';
 
 export class AuthService {
     public static register(data: IRegisterRequest) {

@@ -4,7 +4,7 @@ import MuiLink from '@mui/material/Link';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { Container, Box, TextField, Button, Typography, Paper } from '@mui/material';
 
-import { useRequestResetForm } from '../_model/use-request-reset-form';
+import { useRequestResetForm } from '@/app/auth/request-reset/_model';
 
 export const RequestResetForm = () => {
     const { router, register, handleSubmit, errors, requestResetIsPending, isFinished } = useRequestResetForm();
@@ -31,6 +31,7 @@ export const RequestResetForm = () => {
                         label="Email"
                         autoComplete="email"
                         autoFocus
+                        disabled={requestResetIsPending}
                         {...register('email', { required: 'Email обязателен' })}
                         error={!!errors.email}
                         helperText={errors.email?.message}
@@ -41,7 +42,6 @@ export const RequestResetForm = () => {
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
                         loading={requestResetIsPending}
-                        disabled={requestResetIsPending}
                     >
                         Отправить
                     </Button>

@@ -2,11 +2,10 @@ import { type SubmitHandler, useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
 
-import { Roles } from '../../_model/auth.enums';
-import { AuthService } from '../../_model/auth.service';
-import { MESSAGES } from '@/common/constants/messages';
-import { useToastStore } from '@/common/components/toast/model/useToastStore';
-import { REG_EXP } from '@/common/constants/reg-exp';
+import { Roles } from '@/app/auth/_model';
+import { AuthService } from '@/app/auth/_model';
+import { useToastStore } from '@/components/toast';
+import { MESSAGES, REG_EXP } from '@/common/constants';
 
 interface IRegisterFormInputs {
     email: string;

@@ -3,11 +3,10 @@ import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 
-import { AuthService } from '../../_model/auth.service';
-import { ACCESS_TOKEN_KEY } from '../../_model/auth.constants';
-import { MESSAGES } from '@/common/constants/messages';
-import { CLIENT_MAP } from '@/common/constants/client-map';
-import { useToastStore } from '@/common/components/toast/model/useToastStore';
+import { AuthService } from '@/app/auth/_model';
+import { ACCESS_TOKEN_KEY } from '@/app/auth/_model';
+import { useToastStore } from '@/components/toast';
+import { CLIENT_MAP, MESSAGES } from '@/common/constants';
 
 interface ILoginFormInputs {
     email: string;

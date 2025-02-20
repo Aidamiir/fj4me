@@ -1,5 +1,5 @@
 import { Fragment, type ReactNode } from 'react';
-import { ThemeToggle } from '@/common/components/theme/ui/theme-toggle';
+import { ThemeToggle } from '@/components/theme';
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
     return (

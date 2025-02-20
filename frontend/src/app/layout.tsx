@@ -1,7 +1,7 @@
 import './globals.css';
 
 import { type ReactNode } from 'react';
-import { Providers } from '@/app/_providers/providers';
+import { Providers } from '@/app/_providers';
 
 export default function RootLayout({ children }: { children: ReactNode }) {
     return (

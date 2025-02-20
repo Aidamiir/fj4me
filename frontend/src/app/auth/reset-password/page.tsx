@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import { Box, Typography } from '@mui/material';
+
 import ResetPasswordForm from './_ui/reset-password-form';
 
 export default function ResetPasswordPage() {

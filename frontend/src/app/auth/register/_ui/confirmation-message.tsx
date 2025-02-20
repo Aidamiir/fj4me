@@ -7,7 +7,7 @@ import { Button, Paper, Typography } from '@mui/material';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
 import RegisterForm from './register-form';
-import { CLIENT_MAP } from '@/common/constants/client-map';
+import { CLIENT_MAP } from '@/common/constants';
 
 export const ConfirmationMessage = () => {
     const searchParams = useSearchParams();

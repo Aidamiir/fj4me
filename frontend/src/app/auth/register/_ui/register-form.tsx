@@ -21,15 +21,13 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
-import { useRegisterForm } from '../_model/use-register-form';
-import { Roles } from '../../_model/auth.enums';
-import { MESSAGES } from '@/common/constants/messages';
-import { CLIENT_MAP } from '@/common/constants/client-map';
-import { CustomLink } from '@/common/components/custom-link';
-import { CustomStepper } from '@/common/components/custom-stepper/ui/custom-stepper';
-import { type StepDefinition } from '@/common/components/custom-stepper/model/custom-stepper.interfaces';
-import { GosuslugiIcon } from '@/common/components/gosuslugi-icon';
-import { REG_EXP } from '@/common/constants/reg-exp';
+import { useRegisterForm } from '@/app/auth/register/_model';
+import { Roles } from '@/app/auth/_model';
+import { CustomLink } from '@/components/custom-link';
+import { CustomStepper } from '@/components/custom-stepper';
+import { GosuslugiIcon } from '@/components/gosuslugi-icon';
+import { type StepDefinition } from '@/components/custom-stepper';
+import { CLIENT_MAP, MESSAGES, REG_EXP } from '@/common/constants';
 
 const steps: StepDefinition[] = [
     { label: 'Введите email', Icon: MailOutlineIcon },
@@ -66,6 +64,7 @@ export default function RegisterForm() {
                             label="Email"
                             autoComplete="email"
                             autoFocus
+                            disabled={registerIsPending}
                             {...register('email', {
                                 required: MESSAGES.EMAIL_REQUIRED, pattern: {
                                     value: REG_EXP.EMAIL,
@@ -85,6 +84,7 @@ export default function RegisterForm() {
                                 label="Пароль"
                                 type="password"
                                 autoComplete="new-password"
+                                disabled={registerIsPending}
                                 {...register('password', {
                                     required: MESSAGES.PASSWORD_REQUIRED,
                                     minLength: { value: 6, message: MESSAGES.PASSWORD_MIN_LENGTH },
@@ -99,6 +99,7 @@ export default function RegisterForm() {
                                 label="Подтверждение пароля"
                                 type="password"
                                 autoComplete="new-password"
+                                disabled={registerIsPending}
                                 {...register('confirmPassword', { required: MESSAGES.CONFIRM_PASSWORD_REQUIRED })}
                                 error={!!errors.confirmPassword}
                                 helperText={errors.confirmPassword?.message}
@@ -113,7 +114,7 @@ export default function RegisterForm() {
                                 control={control}
                                 rules={{ required: MESSAGES.ROLE_REQUIRED }}
                                 render={({ field }) => (
-                                    <Select {...field} labelId="role-label" label="Роль">
+                                    <Select {...field} labelId="role-label" label="Роль" disabled={registerIsPending}>
                                         <MenuItem value={Roles.USER}>Я не студент</MenuItem>
                                         <MenuItem value={Roles.STUDENT}>Студент</MenuItem>
                                         <MenuItem value={Roles.EMPLOYER}>Работодатель</MenuItem>
@@ -145,7 +146,6 @@ export default function RegisterForm() {
                                 type="submit"
                                 variant="contained"
                                 fullWidth
-                                disabled={registerIsPending}
                                 loading={registerIsPending}
                                 sx={{ ml: activeStep > 0 ? 2 : 0 }}
                             >

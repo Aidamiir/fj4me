@@ -3,9 +3,9 @@ import { useRouter } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 
-import { AuthService } from '../../_model/auth.service';
-import { MESSAGES } from '@/common/constants/messages';
-import { useToastStore } from '@/common/components/toast/model/useToastStore';
+import { AuthService } from '@/app/auth/_model';
+import { useToastStore } from '@/components/toast';
+import { MESSAGES } from '@/common/constants';
 
 type IRequestResetFormInputs = {
     email: string;

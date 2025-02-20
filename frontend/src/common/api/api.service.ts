@@ -1,7 +1,7 @@
 import type { IRefreshTokensResponse } from '@/app/auth/_model/auth.interfaces';
 import type { ApiResponse } from './api.interfaces';
 import { API_MAP } from './api-map';
-import { CLIENT_MAP } from '../constants/client-map';
+import { CLIENT_MAP } from '@/common/constants';
 
 export class ApiService {
     private readonly baseUrl: string;

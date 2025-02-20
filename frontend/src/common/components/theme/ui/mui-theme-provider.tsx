@@ -3,11 +3,8 @@
 import { type ReactNode, useLayoutEffect, useMemo } from 'react';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 
-import { getInitialTheme } from '../model/get-initial-theme';
-import { ThemeModeEnum } from '../model/theme.enums';
-import { useThemeStore } from '../model/use-theme-store';
-import { THEME_MANUAL_KEY, THEME_STORAGE_KEY } from '../model/theme.constants';
 import { getCssVarValue } from '@/common/utils/get-css-var-value';
+import { getInitialTheme, THEME_MANUAL_KEY, THEME_STORAGE_KEY, ThemeModeEnum, useThemeStore } from '../model';
 
 export const MuiThemeProvider = ({ children }: { children: ReactNode }) => {
     const { mode, setMode } = useThemeStore();
