@@ -1,28 +1,21 @@
 'use client';
 
 import { Fragment } from 'react';
-import { Controller } from 'react-hook-form';
 import {
     Container,
     Box,
     TextField,
     Button,
     Typography,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
     Divider,
     IconButton,
     Paper,
 } from '@mui/material';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
 import { useRegisterForm } from '@/app/auth/register/_model';
-import { Roles } from '@/app/auth/_model';
 import { CustomLink } from '@/components/custom-link';
 import { CustomStepper } from '@/components/custom-stepper';
 import { GosuslugiIcon } from '@/components/gosuslugi-icon';
@@ -32,13 +25,11 @@ import { CLIENT_MAP, MESSAGES, REG_EXP } from '@/common/constants';
 const steps: StepDefinition[] = [
     { label: 'Введите email', Icon: MailOutlineIcon },
     { label: 'Придумайте пароль', Icon: LockOutlinedIcon },
-    { label: 'Выберите роль', Icon: PersonOutlineIcon },
 ];
 
 export default function RegisterForm() {
     const {
         isFinished,
-        control,
         register,
         handleSubmit,
         errors,
@@ -105,23 +96,6 @@ export default function RegisterForm() {
                                 helperText={errors.confirmPassword?.message}
                             />
                         </Fragment>
-                    )}
-                    {activeStep === 2 && (
-                        <FormControl fullWidth margin="normal" error={!!errors.role}>
-                            <InputLabel id="role-label">Роль</InputLabel>
-                            <Controller
-                                name="role"
-                                control={control}
-                                rules={{ required: MESSAGES.ROLE_REQUIRED }}
-                                render={({ field }) => (
-                                    <Select {...field} labelId="role-label" label="Роль" disabled={registerIsPending}>
-                                        <MenuItem value={Roles.USER}>Я не студент</MenuItem>
-                                        <MenuItem value={Roles.STUDENT}>Студент</MenuItem>
-                                        <MenuItem value={Roles.EMPLOYER}>Работодатель</MenuItem>
-                                    </Select>
-                                )}
-                            />
-                        </FormControl>
                     )}
                     <Box
                         sx={{

@@ -1,9 +1,6 @@
-import { Roles } from './auth.enums';
-
 export interface IRegisterRequest {
     email: string;
     password: string;
-    role: Roles;
 }
 
 export interface ILoginCodeRequest {

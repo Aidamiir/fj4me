@@ -2,7 +2,6 @@ import { type SubmitHandler, useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
 
-import { Roles } from '@/app/auth/_model';
 import { AuthService } from '@/app/auth/_model';
 import { useToastStore } from '@/components/toast';
 import { MESSAGES, REG_EXP } from '@/common/constants';
@@ -11,7 +10,6 @@ interface IRegisterFormInputs {
     email: string;
     password: string;
     confirmPassword: string;
-    role: Roles;
 }
 
 export const useRegisterForm = ({ stepsLength }: { stepsLength: number }) => {
@@ -30,15 +28,14 @@ export const useRegisterForm = ({ stepsLength }: { stepsLength: number }) => {
             email: '',
             password: '',
             confirmPassword: '',
-            role: Roles.STUDENT,
         },
         mode: 'onChange',
     });
 
     const registerMutation = useMutation({
         mutationFn: (data: IRegisterFormInputs) => {
-            const { email, password, role } = data;
-            return AuthService.register({ email, password, role });
+            const { email, password } = data;
+            return AuthService.register({ email, password });
         },
         onSuccess: () => {
             addToast({ message: MESSAGES.REGISTER_SUCCESS, severity: 'success' });

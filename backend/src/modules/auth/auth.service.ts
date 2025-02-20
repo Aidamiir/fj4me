@@ -7,7 +7,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { type Response } from 'express';
-import { type Role, User } from '@prisma/client';
+import { type User } from '@prisma/client';
 import { randomBytes } from 'crypto';
 import * as bcrypt from 'bcrypt';
 
@@ -19,6 +19,7 @@ import { computeHash, encrypt } from '../../common/helpers/bcrypt.helpers';
 import { MESSAGES } from '../../common/constants/messages';
 import { CLIENT_MAP } from '../../common/constants/client-map';
 import { API_PREFIX } from '../../common/constants/common';
+import { IAuthenticatedUser } from './interfaces/authenticated-user.interface';
 
 @Injectable()
 export class AuthService {
@@ -43,10 +44,9 @@ export class AuthService {
      * Регистрирует нового пользователя, генерирует токен подтверждения и отправляет письмо для подтверждения регистрации.
      * @param email Электронная почта пользователя.
      * @param password Пароль пользователя.
-     * @param role Роль пользователя ('STUDENT' или 'EMPLOYER').
      * @returns Созданного пользователя.
      */
-    public async register(email: string, password: string, role: Role) {
+    public async register(email: string, password: string) {
         const existingUser = await this.prisma.user.findUnique({ where: { email: email } });
 
         if (existingUser) {
@@ -62,7 +62,6 @@ export class AuthService {
                 data: {
                     email,
                     password: hashedPassword,
-                    role,
                     isEmailConfirmed: false,
                     confirmationToken: token,
                     confirmationExpiresAt: expiresAt,
@@ -280,7 +279,7 @@ export class AuthService {
         location?: string,
         device?: string,
     ) {
-        const payload = { email: user.email, sub: user.id, role: user.role };
+        const payload: IAuthenticatedUser = { email: user.email, userId: user.id };
         const accessToken = this.jwtService.sign(payload, { expiresIn: this.ACCESS_TOKEN_EXPIRES });
         const refreshToken = this.jwtService.sign(payload, { expiresIn: this.REFRESH_TOKEN_EXPIRES });
 
