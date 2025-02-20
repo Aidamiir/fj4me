@@ -1,4 +1,6 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { type User } from '@prisma/client';
+
 import { PrismaService } from '../prisma/prisma.service';
 import { computeHash, encrypt } from '../../common/helpers/bcrypt.helpers';
 import { MESSAGES } from '../../common/constants/messages';
@@ -51,7 +53,7 @@ export class SessionService {
      * @param device - Информация об устройстве (опционально).
      */
     public async createSession(
-        user: any,
+        user: User,
         refreshToken: string,
         ip?: string,
         userAgent?: string,

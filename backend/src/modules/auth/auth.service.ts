@@ -1,13 +1,13 @@
 import {
     ConflictException,
+    ForbiddenException,
     Injectable,
     NotFoundException,
-    UnauthorizedException
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { type Response } from 'express';
-import { type Role } from '@prisma/client';
+import { type Role, User } from '@prisma/client';
 import { randomBytes } from 'crypto';
 import * as bcrypt from 'bcrypt';
 
@@ -82,15 +82,15 @@ export class AuthService {
      * Подтверждает email пользователя по переданному токену.
      * @param token Токен подтверждения.
      * @returns Обновлённого пользователя с подтверждённым email.
-     * @throws UnauthorizedException, если токен недействителен или истёк.
+     * @throws ForbiddenException, если токен недействителен или истёк.
      */
     public async confirmEmail(token: string) {
         const user = await this.prisma.user.findFirst({ where: { confirmationToken: token } });
         if (!user) {
-            throw new UnauthorizedException(MESSAGES.CONFIRMATION_INVALID);
+            throw new ForbiddenException(MESSAGES.CONFIRMATION_INVALID);
         }
         if (user.confirmationExpiresAt && new Date() > user.confirmationExpiresAt) {
-            throw new UnauthorizedException(MESSAGES.CONFIRMATION_EXPIRED);
+            throw new ForbiddenException(MESSAGES.CONFIRMATION_EXPIRED);
         }
 
         return this.prisma.user.update({
@@ -108,13 +108,15 @@ export class AuthService {
      * @param email Электронная почта.
      * @param password Пароль.
      * @returns Объект пользователя без поля password или null, если проверка не пройдена.
-     * @throws UnauthorizedException, если email не подтвержден.
+     * @throws ForbiddenException, если email не подтвержден.
      */
     public async validateUser(email: string, password: string) {
         const user = await this.prisma.user.findUnique({ where: { email: email } });
-
+        if (!user) {
+            throw new NotFoundException(MESSAGES.USER_NOT_FOUND);
+        }
         if (user && (await bcrypt.compare(password, user.password))) {
-            if (user.confirmationExpiresAt && user.confirmationExpiresAt < new Date()) {
+            if (!user.isEmailConfirmed && user.confirmationExpiresAt && user.confirmationExpiresAt < new Date()) {
                 const token = randomBytes(32).toString('hex');
 
                 const baseurl = this.configService.get<string>('BASE_URL');
@@ -122,10 +124,8 @@ export class AuthService {
 
                 await this.mailerService.sendConfirmationEmail(email, confirmationLink);
 
-                throw new UnauthorizedException(MESSAGES.EMAIL_CONFIRMATION_RESENT);
+                throw new ForbiddenException(MESSAGES.EMAIL_CONFIRMATION_RESENT);
             }
-
-           throw new ConflictException(MESSAGES.CODE_ALREADY_SEND);
         }
 
         return user.email;
@@ -135,7 +135,7 @@ export class AuthService {
      * Запрашивает сброс пароля для пользователя, генерируя токен сброса и отправляя письмо с инструкциями.
      * @param email Электронная почта пользователя.
      * @returns Объект с сообщением об отправке инструкций.
-     * @throws UnauthorizedException, если пользователь с таким email не найден.
+     * @throws ForbiddenException, если пользователь с таким email не найден.
      */
     public async requestPasswordReset(email: string) {
         const user = await this.prisma.user.findUnique({ where: { email: email } });
@@ -167,15 +167,15 @@ export class AuthService {
      * @param token Токен сброса пароля.
      * @param newPassword Новый пароль.
      * @returns Объект с сообщением об успешном изменении пароля.
-     * @throws UnauthorizedException, если токен недействителен или истёк.
+     * @throws ForbiddenException, если токен недействителен или истёк.
      */
     public async resetPassword(token: string, newPassword: string) {
         const user = await this.prisma.user.findFirst({ where: { resetPasswordToken: token } });
         if (!user) {
-            throw new UnauthorizedException(MESSAGES.PASSWORD_RESET_INVALID_TOKEN);
+            throw new ForbiddenException(MESSAGES.PASSWORD_RESET_INVALID_TOKEN);
         }
         if (user.resetPasswordExpiresAt && new Date() > user.resetPasswordExpiresAt) {
-            throw new UnauthorizedException(MESSAGES.PASSWORD_RESET_EXPIRED);
+            throw new ForbiddenException(MESSAGES.PASSWORD_RESET_EXPIRED);
         }
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         await this.prisma.user.update({
@@ -213,9 +213,7 @@ export class AuthService {
         if (!user) {
             throw new NotFoundException(MESSAGES.USER_NOT_FOUND);
         }
-        const now = new Date();
-        if (user.loginCode && user.loginCodeExpiresAt && user.loginCodeExpiresAt > now) {
-            await this.mailerService.sendLoginCode(email, user.loginCode);
+        if (user.loginCode && user.loginCodeExpiresAt && user.loginCodeExpiresAt > new Date()) {
             return;
         }
         const loginCode = Math.floor(100000 + Math.random() * 900000).toString();
@@ -240,7 +238,7 @@ export class AuthService {
      * @param {string} email - Электронная почта пользователя.
      * @param {string} code - Код для входа, введённый пользователем.
      * @throws {NotFoundException} Если пользователь с данным email не найден.
-     * @throws {UnauthorizedException} Если код неверный или срок его действия истёк.
+     * @throws {ForbiddenException} Если код неверный или срок его действия истёк.
      */
     public async verifyLoginCode(email: string, code: string) {
         const user = await this.prisma.user.findUnique({ where: { email } });
@@ -248,10 +246,10 @@ export class AuthService {
             throw new NotFoundException(MESSAGES.USER_NOT_FOUND);
         }
         if (user.loginCode !== code) {
-            throw new UnauthorizedException(MESSAGES.CODE_INVALID);
+            throw new ForbiddenException(MESSAGES.CODE_INVALID);
         }
         if (user.loginCodeExpiresAt && new Date() > user.loginCodeExpiresAt) {
-            throw new UnauthorizedException(MESSAGES.CODE_EXPIRED);
+            throw new ForbiddenException(MESSAGES.CODE_EXPIRED);
         }
 
         await this.prisma.user.update({
@@ -276,7 +274,7 @@ export class AuthService {
      * @returns Объект с accessToken и refreshToken.
      */
     public async login(
-        user: any,
+        user: User,
         ip?: string,
         userAgent?: string,
         location?: string,
@@ -295,17 +293,17 @@ export class AuthService {
      * Обновляет refreshToken: проверяет старый, генерирует новые токены, шифрует новый refreshToken и обновляет сессию.
      * @param oldRefreshToken Старый refreshToken (не зашифрованный).
      * @returns Объект с новым accessToken и refreshToken.
-     * @throws UnauthorizedException, если refreshToken недействителен или истёк.
+     * @throws ForbiddenException, если refreshToken недействителен или истёк.
      */
     public async refreshToken(oldRefreshToken: string) {
         const tokenHash = computeHash(oldRefreshToken);
         const session = await this.prisma.session.findUnique({ where: { tokenHash } });
         if (!session) {
-            throw new UnauthorizedException(MESSAGES.REFRESH_TOKEN_INVALID);
+            throw new ForbiddenException(MESSAGES.REFRESH_TOKEN_INVALID);
         }
         if (new Date() > session.expiresAt) {
             await this.prisma.session.delete({ where: { id: session.id } });
-            throw new UnauthorizedException(MESSAGES.REFRESH_TOKEN_EXPIRED);
+            throw new ForbiddenException(MESSAGES.REFRESH_TOKEN_EXPIRED);
         }
         const secret = this.configService.get<string>('JWT_SECRET');
         const newPayload = this.jwtService.verify(oldRefreshToken, { secret });
@@ -332,11 +330,12 @@ export class AuthService {
      * @param res Объект ответа Express.
      */
     public setRefreshTokenFromCookie(refreshToken: string, res: Response) {
+        const isProduction = process.env.NODE_ENV === 'production';
         res.cookie(this.REFRESH_TOKEN_KEY, refreshToken, {
             httpOnly: true,
-            domain: this.configService.get<string>('DOMAIN'),
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
+            domain: isProduction ? this.configService.get<string>('DOMAIN') : undefined,
+            secure: isProduction,
+            sameSite: isProduction ? 'strict' : 'lax',
             maxAge: this.REFRESH_TOKEN_EXPIRES_MS,
         });
     }
@@ -350,17 +349,6 @@ export class AuthService {
         const tokenHash = computeHash(refreshToken);
         await this.prisma.session.deleteMany({
             where: { tokenHash },
-        });
-    }
-
-    /**
-     * Выполняет выход пользователя, удаляя все сессии по userId.
-     * @param userId UserId для удаления всех токенов
-     * @returns Объект с сообщением об успешном выходе.
-     */
-    public async logoutAll(userId: number) {
-        await this.prisma.session.deleteMany({
-            where: { userId },
         });
     }
 }

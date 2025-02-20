@@ -84,6 +84,7 @@ export class AuthController {
     ) {
         const { accessToken, refreshToken } = await this.authService.verifyLoginCode(body.email, body.code);
         this.authService.setRefreshTokenFromCookie(refreshToken, res);
+
         return { accessToken };
     }
 
@@ -131,7 +132,7 @@ export class AuthController {
         const user = req.user as IAuthenticatedUser;
         const refreshToken = req.cookies?.[this.authService.REFRESH_TOKEN_KEY];
         if (refreshToken && user.userId) {
-            await this.authService.logoutAll(user.userId);
+            await this.authService.revokeUserSessions(user.userId);
         }
         res.clearCookie(this.authService.REFRESH_TOKEN_KEY);
     }

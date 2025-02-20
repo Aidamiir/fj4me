@@ -3,9 +3,11 @@ import { PassportModule } from '@nestjs/passport';
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 
-import { JwtStrategy } from './jwt.strategy';
+import { GosuslugiStrategy } from './strategies/gosuslugi.strategy';
+import { JwtStrategy } from './strategies/jwt.strategy';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
+import { GosuslugiAuthController } from './gosuslugi-auth.controller';
 import { SessionModule } from '../session/session.module';
 import { type EnvConfig } from '../../common/interfaces/env-config';
 
@@ -21,7 +23,7 @@ import { type EnvConfig } from '../../common/interfaces/env-config';
         }),
         SessionModule,
     ],
-    providers: [AuthService, JwtStrategy],
-    controllers: [AuthController],
+    providers: [AuthService, JwtStrategy, GosuslugiStrategy],
+    controllers: [AuthController, GosuslugiAuthController],
 })
 export class AuthModule {}

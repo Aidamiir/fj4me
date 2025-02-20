@@ -8,10 +8,6 @@ export function middleware(req: NextRequest) {
     const token = req.cookies.get(REFRESH_TOKEN_KEY)?.value;
     const isAuthPage = req.nextUrl.pathname.startsWith(CLIENT_MAP.AUTH.ROOT);
 
-    if (process.env.NODE_ENV === 'development') {
-        return NextResponse.next();
-    }
-
     if (!token) {
         if (!isAuthPage) {
             return NextResponse.redirect(new URL(CLIENT_MAP.AUTH.LOGIN, req.url));

@@ -50,6 +50,7 @@ export class ApiService {
 
         try {
             response = await fetch(fullUrl, {
+                credentials: 'include',
                 ...options,
                 headers: this.mergeHeaders(options?.headers),
             });
