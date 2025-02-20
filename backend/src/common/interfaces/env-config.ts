@@ -9,6 +9,9 @@ export interface EnvConfig {
     HOST: string;
     CORS_ORIGIN: string;
 
+    THROTTLER_LIMIT_SECONDS: number;
+    THROTTLER_LIMIT_QUERIES: number;
+
     JWT_SECRET: string;
 
     SMTP_HOST: string;
@@ -17,6 +20,7 @@ export interface EnvConfig {
     SMTP_PASS: string;
     SMTP_FROM: string;
 
-    THROTTLER_LIMIT_SECONDS: number;
-    THROTTLER_LIMIT_QUERIES: number;
+    GOSUSLUGI_CLIENT_ID: string;
+    GOSUSLUGI_CLIENT_SECRET: string;
+    GOSUSLUGI_REDIRECT_URI: string;
 }

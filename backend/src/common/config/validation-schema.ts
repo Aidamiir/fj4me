@@ -12,6 +12,9 @@ export const validationSchema = Joi.object<EnvConfig>({
     HOST: Joi.string().hostname().required(),
     CORS_ORIGIN: Joi.string().required(),
 
+    THROTTLER_LIMIT_SECONDS: Joi.number().required(),
+    THROTTLER_LIMIT_QUERIES: Joi.number().required(),
+
     JWT_SECRET: Joi.string().required(),
 
     SMTP_HOST: Joi.string().required(),
@@ -20,6 +23,7 @@ export const validationSchema = Joi.object<EnvConfig>({
     SMTP_PASS: Joi.string().required(),
     SMTP_FROM: Joi.string().required(),
 
-    THROTTLER_LIMIT_SECONDS: Joi.number().required(),
-    THROTTLER_LIMIT_QUERIES: Joi.number().required(),
+    GOSUSLUGI_CLIENT_ID: Joi.string().required(),
+    GOSUSLUGI_CLIENT_SECRET: Joi.string().required(),
+    GOSUSLUGI_REDIRECT_URI: Joi.string().uri().required(),
 });

@@ -1,21 +1,15 @@
 import './globals.css';
 
 import { type ReactNode } from 'react';
-
-import { TanStackQueryProvider } from './_providers/tan-stack-query.provider';
-import { MuiThemeProvider } from '@/common/components/theme/ui/mui-theme-provider';
-import { ToastContainer } from '@/common/components/toast/ui/toast-container';
+import { Providers } from '@/app/_providers/providers';
 
 export default function RootLayout({ children }: { children: ReactNode }) {
     return (
         <html lang="ru">
         <body>
-        <MuiThemeProvider>
-            <TanStackQueryProvider>
+            <Providers>
                 {children}
-            </TanStackQueryProvider>
-            <ToastContainer/>
-        </MuiThemeProvider>
+            </Providers>
         </body>
         </html>
     );

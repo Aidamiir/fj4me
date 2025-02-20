@@ -1,5 +1,4 @@
 import {
-    BadRequestException,
     ConflictException,
     Injectable,
     NotFoundException,
@@ -126,10 +125,10 @@ export class AuthService {
                 throw new UnauthorizedException(MESSAGES.EMAIL_CONFIRMATION_RESENT);
             }
 
-            const { password, ...result } = user;
-            return result;
+           throw new ConflictException(MESSAGES.CODE_ALREADY_SEND);
         }
-        return null;
+
+        return user.email;
     }
 
     /**
@@ -155,7 +154,12 @@ export class AuthService {
         const frontendUrl = this.configService.get<string>('FRONTEND_URL');
         const resetLink = `${frontendUrl + CLIENT_MAP.AUTH.RESET_PASSWORD.ROOT}?${CLIENT_MAP.AUTH.RESET_PASSWORD.TOKEN_QUERY}=${token}`;
 
-        await this.mailerService.sendPasswordResetEmail(email, resetLink);
+        if (user.resetPasswordExpiresAt && user.resetPasswordExpiresAt < new Date()) {
+            await this.mailerService.sendPasswordResetEmail(email, resetLink);
+            return;
+        }
+
+        throw new ConflictException(MESSAGES.PASSWORD_RESET_EMAIL_ALREADY_SEND);
     }
 
     /**

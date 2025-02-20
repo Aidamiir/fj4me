@@ -65,11 +65,11 @@ export class AuthController {
      */
     @Post('login/request-code')
     public async requestLoginCode(@Body() body: AuthLoginDto) {
-        const user = await this.authService.validateUser(body.email, body.password);
-        if (!user) {
+        const email = await this.authService.validateUser(body.email, body.password);
+        if (!email) {
             throw new ForbiddenException(MESSAGES.LOGIN_FAILURE);
         }
-        await this.authService.requestLoginCode(user.email);
+        await this.authService.requestLoginCode(email);
     }
 
     /**

@@ -20,7 +20,6 @@ import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import { Google as GoogleIcon, Facebook as FacebookIcon } from '@mui/icons-material';
 
 import { useRegisterForm } from '../_model/use-register-form';
 import { Roles } from '../../_model/auth.enums';
@@ -29,6 +28,7 @@ import { CLIENT_MAP } from '@/common/constants/client-map';
 import { CustomLink } from '@/common/components/custom-link';
 import { CustomStepper } from '@/common/components/custom-stepper/ui/custom-stepper';
 import { type StepDefinition } from '@/common/components/custom-stepper/model/custom-stepper.interfaces';
+import { GosuslugiIcon } from '@/common/components/gosuslugi-icon';
 import { REG_EXP } from '@/common/constants/reg-exp';
 
 const steps: StepDefinition[] = [
@@ -47,8 +47,7 @@ export default function RegisterForm() {
         activeStep,
         handleBack,
         handleNext,
-        registerIsPending,
-        handleSocialRegistration
+        registerIsPending
     } = useRegisterForm({ stepsLength: steps.length });
 
     return !isFinished ? (
@@ -115,6 +114,7 @@ export default function RegisterForm() {
                                 rules={{ required: MESSAGES.ROLE_REQUIRED }}
                                 render={({ field }) => (
                                     <Select {...field} labelId="role-label" label="Роль">
+                                        <MenuItem value={Roles.USER}>Я не студент</MenuItem>
                                         <MenuItem value={Roles.STUDENT}>Студент</MenuItem>
                                         <MenuItem value={Roles.EMPLOYER}>Работодатель</MenuItem>
                                     </Select>
@@ -155,11 +155,8 @@ export default function RegisterForm() {
                     </Box>
                     <Divider sx={{ mt: 3, mb: 2 }}>или</Divider>
                     <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                        <IconButton onClick={() => handleSocialRegistration('google')}>
-                            <GoogleIcon/>
-                        </IconButton>
-                        <IconButton onClick={() => handleSocialRegistration('facebook')}>
-                            <FacebookIcon/>
+                        <IconButton onClick={() => alert('google')} disabled={true}>
+                            <GosuslugiIcon/>
                         </IconButton>
                     </Box>
                     <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>

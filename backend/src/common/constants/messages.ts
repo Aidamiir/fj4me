@@ -3,6 +3,7 @@ export const MESSAGES = {
 
     CODE_INVALID: 'Неверный код',
     CODE_EXPIRED: 'Срок действия кода истёк',
+    CODE_ALREADY_SEND: 'Код уже был отправлен на вашу почту',
 
     LOGOUT_SUCCESS: 'Выход выполнен успешно',
     LOGIN_FAILURE: 'Неверные данные или email не подтвержден',
@@ -20,6 +21,7 @@ export const MESSAGES = {
     REFRESH_TOKEN_INVALID: 'Неверный токен обновления',
     REFRESH_TOKEN_EXPIRED: 'Токен обновления истёк',
 
+    PASSWORD_RESET_EMAIL_ALREADY_SEND: 'Письмо с инструкциями для восстановления уже было отправлено на почту',
     PASSWORD_RESET_INSTRUCTIONS_SENT: 'Инструкции по сбросу пароля отправлены на вашу почту.',
     PASSWORD_RESET_INVALID_TOKEN: 'Неверный токен сброса пароля',
     PASSWORD_RESET_EXPIRED: 'Токен сброса пароля истёк',
@@ -30,6 +32,7 @@ export const MESSAGES = {
     VACANCY_NOT_FOUND: 'Вакансия не найдена',
     APPLICATION_NOT_FOUND: 'Отклик не найден',
 
+    USER_GET_INFO_FAILED: 'Не удалось получить информацию о пользователе',
     USER_NOT_FOUND: 'Пользователь с таким email не найден',
     USER_ALREADY_EXIST: 'Пользователь с такими данными уже существует',
 

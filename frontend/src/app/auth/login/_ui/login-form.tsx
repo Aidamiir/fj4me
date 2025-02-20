@@ -3,7 +3,6 @@
 import { Fragment } from 'react';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { Google as GoogleIcon, Facebook as FacebookIcon } from '@mui/icons-material';
 import { Container, Box, TextField, Button, Typography, Divider, IconButton } from '@mui/material';
 
 import { useLoginForm } from '../_model/use-login-form';
@@ -11,6 +10,7 @@ import { CLIENT_MAP } from '@/common/constants/client-map';
 import { CustomLink } from '@/common/components/custom-link';
 import { CustomStepper } from '@/common/components/custom-stepper/ui/custom-stepper';
 import { type StepDefinition } from '@/common/components/custom-stepper/model/custom-stepper.interfaces';
+import { GosuslugiIcon } from '@/common/components/gosuslugi-icon';
 
 const steps: StepDefinition[] = [
     { label: 'Введите email и пароль', Icon: MailOutlineIcon },
@@ -35,7 +35,7 @@ export const LoginForm = () => {
                 <Typography component="h1" variant="h5">
                     Вход в систему
                 </Typography>
-                <CustomStepper activeStep={activeStep} steps={steps} />
+                <CustomStepper activeStep={activeStep} steps={steps}/>
                 <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: '100%' }}>
                     {activeStep === 0 && (
                         <Fragment>
@@ -103,11 +103,8 @@ export const LoginForm = () => {
                         <Fragment>
                             <Divider sx={{ mt: 3, mb: 2 }}>или</Divider>
                             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                                <IconButton onClick={() => alert('google')}>
-                                    <GoogleIcon />
-                                </IconButton>
-                                <IconButton onClick={() => alert('facebook')}>
-                                    <FacebookIcon />
+                                <IconButton onClick={() => alert('google')} disabled={true}>
+                                    <GosuslugiIcon/>
                                 </IconButton>
                             </Box>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
@@ -124,4 +121,4 @@ export const LoginForm = () => {
             </Box>
         </Container>
     );
-}
+};
