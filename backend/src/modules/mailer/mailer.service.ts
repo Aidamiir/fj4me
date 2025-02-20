@@ -19,7 +19,7 @@ export class MailerService {
             host,
             port,
             debug: true,
-            secure: false,
+            secure: true,
             auth: {
                 user,
                 pass,
