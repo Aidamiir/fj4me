@@ -19,6 +19,7 @@ import { AuthLoginDto } from './dto/auth-login.dto';
 import { AuthRegisterDto } from './dto/auth-register.dto';
 import { RequestResetDto } from './dto/request-reset.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { AuthLoginCodeDto } from './dto/auth-login-code.dto';
 import { MESSAGES } from '../../common/constants/messages';
 import { CLIENT_MAP } from '../../common/constants/client-map';
 import type { EnvConfig } from '../../common/interfaces/env-config';
@@ -50,7 +51,7 @@ export class AuthController {
         const frontendUrl = this.configService.get<string>('FRONTEND_URL');
         try {
             await this.authService.confirmEmail(token);
-            return res.redirect(frontendUrl + CLIENT_MAP.AUTH.REGISTER.ROOT + `?${CLIENT_MAP.AUTH.REGISTER.CONFIRM_QUERY}?=true`);
+            return res.redirect(frontendUrl + CLIENT_MAP.AUTH.REGISTER.ROOT + `?${CLIENT_MAP.AUTH.REGISTER.CONFIRM_QUERY}=true`);
         }
         catch {
             return res.redirect(frontendUrl + CLIENT_MAP.AUTH.REGISTER.ROOT + `?${CLIENT_MAP.AUTH.REGISTER.CONFIRM_QUERY}=false`);
@@ -58,20 +59,32 @@ export class AuthController {
     }
 
     /**
-     * Выполняет вход пользователя после проверки учетных данных и подтверждения email.
+     * Шаг 1: Запрос кода для входа.
+     * Проверяет email и пароль, а затем отправляет код на почту.
+     * В случае успеха возвращается пустой объект, так как сообщение об успехе обрабатывается на фронте.
      */
-    @Post('login')
-    public async login(
-        @Body() body: AuthLoginDto,
-        @Res({ passthrough: true }) res: Response,
-    ) {
+    @Post('login/request-code')
+    public async requestLoginCode(@Body() body: AuthLoginDto) {
         const user = await this.authService.validateUser(body.email, body.password);
         if (!user) {
             throw new ForbiddenException(MESSAGES.LOGIN_FAILURE);
         }
-        const { refreshToken, ...response } = await this.authService.login(user);
+        await this.authService.requestLoginCode(user.email);
+    }
+
+    /**
+     * Шаг 2: Подтверждение кода для входа.
+     * Принимает email и код, проверяет его и, если всё верно, выполняет вход.
+     * В случае успеха возвращаются токены (это необходимо для авторизации).
+     */
+    @Post('login/verify-code')
+    public async verifyLoginCode(
+        @Body() body: AuthLoginCodeDto,
+        @Res({ passthrough: true }) res: Response,
+    ) {
+        const { accessToken, refreshToken } = await this.authService.verifyLoginCode(body.email, body.code);
         this.authService.setRefreshTokenFromCookie(refreshToken, res);
-        return response;
+        return { accessToken };
     }
 
     /**

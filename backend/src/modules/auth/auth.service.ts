@@ -19,12 +19,14 @@ import { type EnvConfig } from '../../common/interfaces/env-config';
 import { computeHash, encrypt } from '../../common/helpers/bcrypt.helpers';
 import { MESSAGES } from '../../common/constants/messages';
 import { CLIENT_MAP } from '../../common/constants/client-map';
+import { API_PREFIX } from '../../common/constants/common';
 
 @Injectable()
 export class AuthService {
     public readonly REFRESH_TOKEN_KEY = 'fj4me-refresh-token';
     private readonly CONFIRMATION_TOKEN_EXPIRES_MS = 24 * 60 * 60 * 1000;
     private readonly RESET_TOKEN_EXPIRES_MS = 60 * 60 * 1000;
+    private readonly LOGIN_CODE_EXPIRES_MS = 5 * 60 * 1000;
 
     private readonly ACCESS_TOKEN_EXPIRES = '15m';
     private readonly REFRESH_TOKEN_EXPIRES = '7d';
@@ -68,10 +70,8 @@ export class AuthService {
                 },
             });
 
-            const host = this.configService.get<string>('HOST');
-            const port = this.configService.get<string>('PORT');
-            const protocol = this.configService.get<boolean>('SSL') ? 'https' : 'http';
-            const confirmationLink = `${protocol}://${host}:${port}/auth/confirm?token=${token}`;
+            const baseurl = this.configService.get<string>('BASE_URL');
+            const confirmationLink = `${baseurl}/${API_PREFIX}/auth/confirm?token=${token}`;
 
             await this.mailerService.sendConfirmationEmail(email, confirmationLink);
 
@@ -117,10 +117,9 @@ export class AuthService {
         if (user && (await bcrypt.compare(password, user.password))) {
             if (user.confirmationExpiresAt && user.confirmationExpiresAt < new Date()) {
                 const token = randomBytes(32).toString('hex');
-                const host = this.configService.get<string>('HOST');
-                const port = this.configService.get<string>('PORT');
-                const protocol = this.configService.get<boolean>('SSL') ? 'https' : 'http';
-                const confirmationLink = `${protocol}://${host}:${port}/auth/confirm?token=${token}`;
+
+                const baseurl = this.configService.get<string>('BASE_URL');
+                const confirmationLink = `${baseurl}/${API_PREFIX}/auth/confirm?token=${token}`;
 
                 await this.mailerService.sendConfirmationEmail(email, confirmationLink);
 
@@ -195,6 +194,71 @@ export class AuthService {
         await this.prisma.session.deleteMany({
             where: { userId },
         });
+    }
+
+    /**
+     * Запрашивает код для входа.
+     * Генерирует 6-значный код, устанавливает время истечения (5 минут),
+     * сохраняет их в базе данных и отправляет код на email.
+     *
+     * @param {string} email - Электронная почта пользователя.
+     * @throws {NotFoundException} Если пользователь с данным email не найден.
+     */
+    public async requestLoginCode(email: string) {
+        const user = await this.prisma.user.findUnique({ where: { email } });
+        if (!user) {
+            throw new NotFoundException(MESSAGES.USER_NOT_FOUND);
+        }
+        const now = new Date();
+        if (user.loginCode && user.loginCodeExpiresAt && user.loginCodeExpiresAt > now) {
+            await this.mailerService.sendLoginCode(email, user.loginCode);
+            return;
+        }
+        const loginCode = Math.floor(100000 + Math.random() * 900000).toString();
+        const expiresAt = new Date(Date.now() + this.LOGIN_CODE_EXPIRES_MS);
+
+        await this.prisma.user.update({
+            where: { email },
+            data: {
+                loginCode,
+                loginCodeExpiresAt: expiresAt,
+            },
+        });
+
+        await this.mailerService.sendLoginCode(email, loginCode);
+    }
+
+    /**
+     * Проверяет код для входа.
+     * Сравнивает переданный код с сохраненным в базе данных и проверяет срок его действия.
+     * Если код корректный и не истек, очищает поля кода и выполняет вход пользователя.
+     *
+     * @param {string} email - Электронная почта пользователя.
+     * @param {string} code - Код для входа, введённый пользователем.
+     * @throws {NotFoundException} Если пользователь с данным email не найден.
+     * @throws {UnauthorizedException} Если код неверный или срок его действия истёк.
+     */
+    public async verifyLoginCode(email: string, code: string) {
+        const user = await this.prisma.user.findUnique({ where: { email } });
+        if (!user) {
+            throw new NotFoundException(MESSAGES.USER_NOT_FOUND);
+        }
+        if (user.loginCode !== code) {
+            throw new UnauthorizedException(MESSAGES.CODE_INVALID);
+        }
+        if (user.loginCodeExpiresAt && new Date() > user.loginCodeExpiresAt) {
+            throw new UnauthorizedException(MESSAGES.CODE_EXPIRED);
+        }
+
+        await this.prisma.user.update({
+            where: { email },
+            data: {
+                loginCode: null,
+                loginCodeExpiresAt: null,
+            },
+        });
+
+        return this.login(user);
     }
 
     /**

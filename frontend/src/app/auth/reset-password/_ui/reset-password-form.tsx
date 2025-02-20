@@ -10,7 +10,7 @@ import { CLIENT_MAP } from '@/common/constants/client-map';
 import { CustomLink } from '@/common/components/custom-link';
 
 export default function ResetPasswordForm() {
-    const { isFinished, handleSubmit, register, errors, resetPasswordMutation } = useResetPasswordForm();
+    const { isFinished, handleSubmit, register, errors, resetPasswordIsPending } = useResetPasswordForm();
 
     return !isFinished ? (
         <Container maxWidth="xs">
@@ -49,8 +49,8 @@ export default function ResetPasswordForm() {
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
-                        loading={resetPasswordMutation.isPending}
-                        disabled={resetPasswordMutation.isPending}
+                        loading={resetPasswordIsPending}
+                        disabled={resetPasswordIsPending}
                     >
                         Отправить
                     </Button>

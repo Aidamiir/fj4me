@@ -7,7 +7,7 @@ import { Container, Box, TextField, Button, Typography, Paper } from '@mui/mater
 import { useRequestResetForm } from '../_model/use-request-reset-form';
 
 export const RequestResetForm = () => {
-    const { router, register, handleSubmit, errors, requestResetMutation, isFinished } = useRequestResetForm();
+    const { router, register, handleSubmit, errors, requestResetIsPending, isFinished } = useRequestResetForm();
 
     return !isFinished ? (
         <Container maxWidth="xs">
@@ -40,8 +40,8 @@ export const RequestResetForm = () => {
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
-                        loading={requestResetMutation.isPending}
-                        disabled={requestResetMutation.isPending}
+                        loading={requestResetIsPending}
+                        disabled={requestResetIsPending}
                     >
                         Отправить
                     </Button>

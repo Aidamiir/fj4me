@@ -4,6 +4,7 @@ export const MESSAGES = {
     REQUEST_RESET_SUCCESS: 'Письмо с инструкциями по сбросу пароля отправлено вам на почту',
     RESET_PASSWORD_SUCCESS: 'Пароль успешно сброшен!',
     RESET_PASSWORD_LINK_INVALID: 'Ссылка на сброс пароля испорчена, вернитесь к восстановлению пароля и получите новую ссылку',
+    CODE_SENT: 'Код отправлен на вашу почту',
 
     EMAIL_REQUIRED: 'Email обязателен',
     EMAIL_INVALID: 'Неверный формат email',

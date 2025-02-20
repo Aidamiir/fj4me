@@ -1,6 +1,9 @@
 export const MESSAGES = {
     REGISTER_SUCCESS: 'Пользователь успешно зарегистрирован. Проверьте почту для подтверждения регистрации.',
 
+    CODE_INVALID: 'Неверный код',
+    CODE_EXPIRED: 'Срок действия кода истёк',
+
     LOGOUT_SUCCESS: 'Выход выполнен успешно',
     LOGIN_FAILURE: 'Неверные данные или email не подтвержден',
     LOGOUT_ALL_SUCCESS: 'Все сессии завершены успешно',

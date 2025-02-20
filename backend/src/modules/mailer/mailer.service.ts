@@ -29,38 +29,34 @@ export class MailerService {
     }
 
     /**
-     * Отправляет письмо для подтверждения регистрации пользователя.
-     *
-     * @param email - Электронная почта получателя.
-     * @param confirmationLink - Ссылка для подтверждения регистрации.
-     * @returns Promise, который выполняется при успешной отправке письма.
-     */
-    public async sendConfirmationEmail(email: string, confirmationLink: string) {
+     * Приватный метод для отправки письма с общим обработчиком ошибок
+     * */
+    private async sendMail(mailOptions: nodemailer.SendMailOptions): Promise<void> {
         try {
-            const mailOptions = {
-                from: this.configService.get<string>('SMTP_FROM'),
-                to: email,
-                subject: 'Подтверждение регистрации',
-                text: `Пожалуйста, подтвердите вашу регистрацию, перейдя по ссылке: ${confirmationLink}`,
-                html: `<p>Пожалуйста, подтвердите вашу регистрацию, перейдя по ссылке:</p>
-             <a href="${confirmationLink}">${confirmationLink}</a>`,
-            };
-
             const res = await this.transporter.sendMail(mailOptions);
-            console.log(res);
-            console.log(this.transporter);
-        }
-        catch (err) {
-            console.log(err);
-            console.log(this.transporter);
+        } catch {
             throw new ConflictException(MESSAGES.EMAIL_SEND_FAILED);
         }
     }
 
     /**
+     * Отправляет письмо для подтверждения регистрации пользователя.
+     */
+    public async sendConfirmationEmail(email: string, confirmationLink: string) {
+        const mailOptions = {
+            from: this.configService.get<string>('SMTP_FROM'),
+            to: email,
+            subject: 'Подтверждение регистрации',
+            text: `Пожалуйста, подтвердите вашу регистрацию, перейдя по ссылке: ${confirmationLink}`,
+            html: `<p>Пожалуйста, подтвердите вашу регистрацию, перейдя по ссылке:</p>
+             <a href="${confirmationLink}">${confirmationLink}</a>`,
+        };
+
+        await this.sendMail(mailOptions);
+    }
+
+    /**
      * Отправляет письмо для сброса пароля.
-     * @param email Электронная почта получателя.
-     * @param resetLink Ссылка для сброса пароля.
      */
     public async sendPasswordResetEmail(email: string, resetLink: string) {
         const mailOptions = {
@@ -72,6 +68,25 @@ export class MailerService {
              <a href="${resetLink}">${resetLink}</a>`,
         };
 
-        await this.transporter.sendMail(mailOptions);
+        await this.sendMail(mailOptions);
+    }
+
+    /**
+     * Отправляет письмо с кодом для входа.
+     * В случае успеха метод не возвращает никаких success-сообщений,
+     * все уведомления об успешном выполнении обрабатываются на фронте.
+     */
+    public async sendLoginCode(email: string, code: string) {
+        const subject = 'Ваш код для входа';
+        const text = `Ваш код для входа: ${code}. Код действителен в течение 5 минут.`;
+        const mailOptions = {
+            from: this.configService.get<string>('SMTP_FROM'),
+            to: email,
+            subject,
+            text,
+            html: `<p>${text}</p>`,
+        };
+
+        await this.sendMail(mailOptions);
     }
 }

@@ -1,9 +1,10 @@
 export interface EnvConfig {
     DATABASE_URL: string;
+
+    BASE_URL: string;
     FRONTEND_URL: string;
 
     DOMAIN: string;
-    SSL: boolean;
     PORT: number;
     HOST: string;
     CORS_ORIGIN: string;

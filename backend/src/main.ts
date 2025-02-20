@@ -10,6 +10,7 @@ import { configureSwagger, swaggerPrefix } from './common/config/configure-swagg
 import { ResponseTransformInterceptor } from './common/interceptor/response-transform.interceptor';
 import { AllExceptionsFilter } from './common/filters/all-exception-filter';
 import { type EnvConfig } from './common/interfaces/env-config';
+import { API_PREFIX } from './common/constants/common';
 
 async function bootstrap() {
     const logger = new Logger('Bootstrap');
@@ -22,7 +23,7 @@ async function bootstrap() {
     app.useGlobalFilters(new AllExceptionsFilter());
     app.useGlobalInterceptors(new ResponseTransformInterceptor());
     app.use(helmet());
-    app.setGlobalPrefix('api');
+    app.setGlobalPrefix(API_PREFIX);
     configurePipes(app);
     configureCors(app, configService);
     configureSwagger(app);

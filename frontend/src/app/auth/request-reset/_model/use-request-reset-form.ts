@@ -42,6 +42,6 @@ export const useRequestResetForm = () => {
         register,
         handleSubmit: handleSubmit(onSubmit),
         errors,
-        requestResetMutation,
+        requestResetIsPending: requestResetMutation.isPending,
     }
 }

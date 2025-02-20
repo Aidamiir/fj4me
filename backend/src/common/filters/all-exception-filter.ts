@@ -14,6 +14,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
         let errorMessage: string;
 
+        if (response.headersSent) {
+            return;
+        }
+
         if (exception instanceof HttpException) {
             const res = exception.getResponse();
             if (typeof res === 'string') {

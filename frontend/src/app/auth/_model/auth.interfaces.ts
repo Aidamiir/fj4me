@@ -6,13 +6,14 @@ export interface IRegisterRequest {
     role: Roles;
 }
 
-export interface IConfirmRequest {
-    token: string;
-}
-
-export interface ILoginRequest {
+export interface ILoginCodeRequest {
     email: string;
     password: string;
+}
+
+export interface IVerifyLoginCodeRequest {
+    email: string;
+    code: string;
 }
 
 export interface ILoginResponse {

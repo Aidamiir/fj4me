@@ -47,7 +47,7 @@ export default function RegisterForm() {
         activeStep,
         handleBack,
         handleNext,
-        registerMutation,
+        registerIsPending,
         handleSocialRegistration
     } = useRegisterForm({ stepsLength: steps.length });
 
@@ -145,8 +145,8 @@ export default function RegisterForm() {
                                 type="submit"
                                 variant="contained"
                                 fullWidth
-                                disabled={registerMutation.isPending}
-                                loading={registerMutation.isPending}
+                                disabled={registerIsPending}
+                                loading={registerIsPending}
                                 sx={{ ml: activeStep > 0 ? 2 : 0 }}
                             >
                                 Зарегистрироваться

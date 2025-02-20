@@ -70,6 +70,6 @@ export const useResetPasswordForm = () => {
         register,
         handleSubmit: handleSubmit(onSubmit),
         errors,
-        resetPasswordMutation,
+        resetPasswordIsPending: resetPasswordMutation.isPending,
     };
 };

@@ -126,7 +126,7 @@ export const useRegisterForm = ({ stepsLength }: { stepsLength: number }) => {
         activeStep,
         handleBack,
         handleNext,
-        registerMutation,
+        registerIsPending: registerMutation.isPending,
         handleSocialRegistration,
     };
 };
