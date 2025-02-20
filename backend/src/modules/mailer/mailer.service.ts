@@ -18,13 +18,12 @@ export class MailerService {
         this.transporter = nodemailer.createTransport({
             host,
             port,
-            debug: true,
             secure: true,
             auth: {
                 user,
                 pass,
             },
-            connectionTimeout: 20000,
+            connectionTimeout: 30000,
         });
     }
 
@@ -48,9 +47,11 @@ export class MailerService {
 
             const res = await this.transporter.sendMail(mailOptions);
             console.log(res);
+            console.log(this.transporter);
         }
         catch (err) {
             console.log(err);
+            console.log(this.transporter);
             throw new ConflictException(MESSAGES.EMAIL_SEND_FAILED);
         }
     }
