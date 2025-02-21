@@ -1,5 +1,5 @@
 'use client';
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
@@ -23,11 +23,15 @@ interface RecommendedResumesSliderProps {
 export const RecommendedResumesSlider = ({ resumes }: RecommendedResumesSliderProps) => {
     const router = useRouter();
 
-    // Group resumes into pairs for each slide
-    const slides: Resume[][] = [];
-    for (let i = 0; i < resumes.length; i += 2) {
-        slides.push(resumes.slice(i, i + 2));
-    }
+    const [slides, setSlides] = useState<Resume[][]>([]);
+
+    useEffect(() => {
+        const newSlides: Resume[][] = [];
+        for (let i = 0; i < resumes.length; i += 2) {
+            newSlides.push(resumes.slice(i, i + 2));
+        }
+        setSlides(newSlides);
+    }, [resumes]);
 
     const handleViewAll = () => {
         router.push(CLIENT_MAP.RESUMES.RECOMMENDED);

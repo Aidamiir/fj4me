@@ -12,5 +12,31 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
 
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: fj4me-backend
+    ports:
+      - '4040:4040'
+    depends_on:
+      - postgres
+    env_file:
+      - ./backend/.env
+    environment:
+      DATABASE_URL: "postgresql://admin:123456@fj4me-postgres:5432/fj4me-db?schema=public"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: fj4me-frontend
+    ports:
+      - '3000:3000'
+    depends_on:
+      - backend
+    env_file:
+      - ./frontend/.env
+
 volumes:
   db_data:
